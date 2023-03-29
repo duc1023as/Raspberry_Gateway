@@ -10,7 +10,7 @@ services:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./config/passwd:/mosquitto/config/passwd
   influxdb:
-    image: arm32v7/influxdb:2.1.1
+    image: influxdb:2.1.1-arm64
     ports:
       - "8090:8086"
     environment:
