@@ -30,7 +30,7 @@ services:
 
       - INFLUXDB_BUCKET=Test
       - INFLUXDB_ORG=HCMUT
-      # - INFLUXDB_DB=Test
+      - INFLUXDB_DB=Test
       - INFLUXDB_HTTP_AUTH_ENABLED=true
       - INFLUXDB_ADMIN_USER=duc1023as
       - INFLUXDB_ADMIN_PASSWORD=doantotnghiep
