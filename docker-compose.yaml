@@ -10,19 +10,20 @@ services:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./config/passwd:/mosquitto/config/passwd
   influxdb:
-    image: influxdb:2.0
+    image: arm32v7/influxdb
     ports:
       - "8090:8086"
     environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=duc1023as
-      - DOCKER_INFLUXDB_INIT_PASSWORD=doantotnghiep
-      - DOCKER_INFLUXDB_INIT_ORG=HCMUT
-      - DOCKER_INFLUXDB_INIT_BUCKET=Test
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
-      - DOCKER_INFLUXDB_INIT_AUTH_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
-      - DOCKER_INFLUXDB_INIT_RETENTION=1d
-      - DOCKER_INFLUXDB_INIT_SHARD_DURATION=1h
+      # - DOCKER_INFLUXDB_INIT_MODE=setup
+      # - DOCKER_INFLUXDB_INIT_USERNAME=duc1023as
+      # - DOCKER_INFLUXDB_INIT_PASSWORD=doantotnghiep
+      # - DOCKER_INFLUXDB_INIT_ORG=HCMUT
+      # - DOCKER_INFLUXDB_INIT_BUCKET=Test
+      # - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
+      # - DOCKER_INFLUXDB_INIT_AUTH_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
+      # - DOCKER_INFLUXDB_INIT_RETENTION=1d
+      # - DOCKER_INFLUXDB_INIT_SHARD_DURATION=1h
+      - INFLUXDB_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
     volumes:
       - ./influxdb-data:/var/lib/influxdb2 
   python-client:
@@ -41,6 +42,6 @@ services:
       - URL_AWS=broker.hivemq.com
       - URL=http://influxdb:8086
       - TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
-      - ORG=HCMUT
-      - BUCKET=Test
+      # - ORG=HCMUT
+      # - BUCKET=Test
     command: python3 main.py

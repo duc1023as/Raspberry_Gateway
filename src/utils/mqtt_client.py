@@ -44,7 +44,8 @@ bucket= os.getenv("BUCKET")
 
 url = os.getenv("URL")
 
-clientDB = InfluxDBClient(url=url, token=token,org=org)
+# clientDB = InfluxDBClient(url=url, token=token,org=org)
+clientDB = InfluxDBClient(url=url, token=token)
 
 write_api = clientDB.write_api(write_options=SYNCHRONOUS)
 
