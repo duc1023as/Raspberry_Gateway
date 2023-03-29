@@ -10,7 +10,7 @@ services:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./config/passwd:/mosquitto/config/passwd
   influxdb:
-    image: influxdb:2.1.1-arm64
+    image: arm32v7/influxdb
     ports:
       - "8090:8086"
     environment:
@@ -23,10 +23,21 @@ services:
       # - DOCKER_INFLUXDB_INIT_AUTH_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
       # - DOCKER_INFLUXDB_INIT_RETENTION=1d
       # - DOCKER_INFLUXDB_INIT_SHARD_DURATION=1h
-      - INFLUXDB_HOSTNAME=influxdb
-      - INFLUXDB_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
-      - INFLUXDB_ORG=HCMUT
+
+      # - INFLUXDB_HOSTNAME=influxdb
+      # - INFLUXDB_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
+      # - INFLUXDB_ORG=HCMUT
+
       - INFLUXDB_BUCKET=Test
+      - INFLUXDB_ORG=HCMUT
+      # - INFLUXDB_DB=Test
+      - INFLUXDB_HTTP_AUTH_ENABLED=true
+      - INFLUXDB_ADMIN_USER=duc1023as
+      - INFLUXDB_ADMIN_PASSWORD=doantotnghiep
+      - INFLUXDB_USER=duc1023as
+      - INFLUXDB_USER_PASSWORD=doantotnghiep
+      - INFLUXDB_HTTP_TOKEN_AUTH_ENABLED=true
+      - INFLUXDB_HTTP_TOKEN_SECRET=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
       # - INFLUXDB_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
     volumes:
       - ./influxdb-data:/var/lib/influxdb2 
