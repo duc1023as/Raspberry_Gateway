@@ -45,3 +45,5 @@ services:
       # - ORG=HCMUT
       # - BUCKET=Test
     command: python3 main.py
+# volumes:
+#   influxdb-data:
