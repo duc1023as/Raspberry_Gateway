@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  mosquito:
+    image: eclipse-mosquitto:latest
+    restart: always
+    ports:
+      - "80:1883"
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./config/passwd:/mosquitto/config/passwd
+  influxdb:
+    image: influxdb:2.0
+    ports:
+      - "8090:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=duc1023as
+      - DOCKER_INFLUXDB_INIT_PASSWORD=doantotnghiep
+      - DOCKER_INFLUXDB_INIT_ORG=HCMUT
+      - DOCKER_INFLUXDB_INIT_BUCKET=Test
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
+      - DOCKER_INFLUXDB_INIT_AUTH_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
+      - DOCKER_INFLUXDB_INIT_RETENTION=1d
+      - DOCKER_INFLUXDB_INIT_SHARD_DURATION=1h
+    volumes:
+      - ./influxdb-data:/var/lib/influxdb2 
+  python-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - mosquito
+      - influxdb
+    environment:
+      - URL_MQTT=mosquito
+      - PORT=1883
+      - USER=mqttBroker
+      - PASSWORD=dominhduc
+      - URL_AWS=broker.hivemq.com
+      - URL=http://influxdb:8086
+      - TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
+      - ORG=HCMUT
+      - BUCKET=Test
+    command: python3 main.py
