@@ -23,7 +23,11 @@ services:
       # - DOCKER_INFLUXDB_INIT_AUTH_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
       # - DOCKER_INFLUXDB_INIT_RETENTION=1d
       # - DOCKER_INFLUXDB_INIT_SHARD_DURATION=1h
+      - INFLUXDB_HOSTNAME=influxdb
       - INFLUXDB_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
+      - INFLUXDB_ORG=HCMUT
+      - INFLUXDB_BUCKET=Test
+      # - INFLUXDB_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
     volumes:
       - ./influxdb-data:/var/lib/influxdb2 
   python-client:
@@ -42,8 +46,8 @@ services:
       - URL_AWS=broker.hivemq.com
       - URL=http://influxdb:8086
       - TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
-      # - ORG=HCMUT
-      # - BUCKET=Test
+      - ORG=HCMUT
+      - BUCKET=Test
     command: python3 main.py
 # volumes:
 #   influxdb-data:
