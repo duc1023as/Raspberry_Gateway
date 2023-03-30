@@ -35,17 +35,14 @@ services:
     volumes:
       - ./influxdb-data:/var/lib/influxdb2
   influxdb-ui:
-    image: influxdb/influxdb:1.9-alpine
-    restart: always
-    environment:
-      INFLUXDB_HOST: influxdb
-      INFLUXDB_PORT: 8086
-      INFLUXDB_USERNAME: duc1023as
-      INFLUXDB_PASSWORD: doantotnghiep
+    image: influxdb:1.8
     ports:
       - "3000:3000"
-    depends_on:
-      - influxdb
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_USERNAME=duc1023as
+      - INFLUXDB_PASSWORD=doantotnghiep
+    restart: always
 
   python-client:
     build:
