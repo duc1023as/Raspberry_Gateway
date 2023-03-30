@@ -128,10 +128,6 @@ def on_message(clientCB, userdata, msg):
 
     # p = Point("DataArea1").tag("location", "Area 1").tag("device","ESP32").field("temperature", msg_in["temp"]).field("humidity",msg_in["hum"])
     # write_api.write(bucket=bucket, org=org, record=p)
-    fields = {
-    "temperature": msg_in["temp"],
-    "humidity":  msg_in["hum"]
-    }
     json_body = [
     {
         "measurement": "DataArea1",
@@ -140,20 +136,10 @@ def on_message(clientCB, userdata, msg):
             "device": "ESP32"
         },
         "fields": {
-            "temperature": msg_in["temp"]
-        }
-    },
-    {
-        "measurement": "DataArea1",
-        "tags": {
-            "location":"Area1",
-            "device": "ESP32"
-        },
-        "fields": {
+            "temperature": msg_in["temp"],
             "humidity": msg_in["hum"]
         }
     },
-    
 ]
     clientDB.write_points(json_body)
     # client_AWS.publish(topic_DHT,msg.payload)
