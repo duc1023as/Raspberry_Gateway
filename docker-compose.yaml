@@ -11,6 +11,7 @@ services:
       - ./config/passwd:/mosquitto/config/passwd
   influxdb:
     image: arm32v7/influxdb
+    restart: always
     ports:
       - "8090:8086"
     environment:
