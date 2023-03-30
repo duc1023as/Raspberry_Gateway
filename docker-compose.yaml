@@ -34,6 +34,7 @@ services:
       - INFLUXDB_USER_PASSWORD=doantotnghiep
     volumes:
       - ./influxdb-data:/var/lib/influxdb2
+      - ./config/influxdb.config:/etc/influxdb/influxdb.conf
   influxdb-ui:
     image: influxdb:1.8
     ports:
