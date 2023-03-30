@@ -12,8 +12,8 @@ import json
 import os
 import time
 
-from influxdb_client import InfluxDBClient, Point, WritePrecision
-from influxdb_client.client.write_api import SYNCHRONOUS
+# from influxdb_client import InfluxDBClient, Point, WritePrecision
+# from influxdb_client.client.write_api import SYNCHRONOUS
 
 from influxdb import InfluxDBClient
 
