@@ -58,6 +58,9 @@ userDB= os.getenv("INFLUXDB_USER")
 passwordDB= os.getenv("INFLUXDB_PASSWORD")
 mydb = os.getenv("INFLUXDB_DB")
 
+print(hostDB)
+print(portDB)
+
 
 clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=mydb)
 
@@ -136,7 +139,6 @@ def on_message(clientCB, userdata, msg):
             "location":"Area1",
             "device": "ESP32"
         },
-        "time": "30/3/2023",
         "fields": {
             "value": fields
         }
