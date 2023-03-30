@@ -136,7 +136,7 @@ def on_message(clientCB, userdata, msg):
             "location":"Area1",
             "device": "ESP32"
         },
-        "time": time.localtime(),
+        "time": "30/3/2023",
         "fields": {
             "value": fields
         }
