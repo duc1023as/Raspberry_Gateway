@@ -38,7 +38,7 @@ services:
   influxdb-ui:
     image: influxdb:1.8
     ports:
-      - "3000:3000"
+      - "3000:8086"
     environment:
       - INFLUXDB_URL=http://influxdb:8086
       - INFLUXDB_USERNAME=duc1023as
