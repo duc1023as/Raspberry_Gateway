@@ -10,9 +10,12 @@ import random
 import string
 import json
 import os
+import time
 
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
+
+from influxdb import InfluxDBClient
 
 from ..core.sparkplug_b import *
 from ..core.mqqt_provider import MQTT
@@ -38,16 +41,25 @@ client = MQTT(
 # Set up for InfuxDB
 # You can generate a Token from the "Tokens Tab" in the UI
 
-org = os.getenv("ORG")
-token= os.getenv("TOKEN")
-bucket= os.getenv("BUCKET")
+# org = os.getenv("ORG")
+# token= os.getenv("TOKEN")
+# bucket= os.getenv("BUCKET")
 
-url = os.getenv("URL")
+# url = os.getenv("URL")
 
-clientDB = InfluxDBClient(url=url, token=token,org=org)
-# clientDB = InfluxDBClient(url=url, token=token)
+# clientDB = InfluxDBClient(url=url, token=token,org=org)
+# # clientDB = InfluxDBClient(url=url, token=token)
 
-write_api = clientDB.write_api(write_options=SYNCHRONOUS)
+# write_api = clientDB.write_api(write_options=SYNCHRONOUS)
+
+hostDB = os.getenv("INFLUXDB_HOST")
+portDB = os.getenv("INFLUXDB_PORT")
+userDB= os.getenv("INFLUXDB_USER")
+passwordDB= os.getenv("INFLUXDB_PASSWORD")
+mydb = os.getenv("INFLUXDB_DB")
+
+
+clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=mydb)
 
 
 # Set up for MQTT local
@@ -111,8 +123,26 @@ def on_message(clientCB, userdata, msg):
     msg_in=json.loads(msg_decode)
     publishDeviceData(msg_in)
 
-    p = Point("DataArea1").tag("location", "Area 1").tag("device","ESP32").field("temperature", msg_in["temp"]).field("humidity",msg_in["hum"])
-    write_api.write(bucket=bucket, org=org, record=p)
+    # p = Point("DataArea1").tag("location", "Area 1").tag("device","ESP32").field("temperature", msg_in["temp"]).field("humidity",msg_in["hum"])
+    # write_api.write(bucket=bucket, org=org, record=p)
+    fields = {
+    "temperature": msg_in["temp"],
+    "humidity":  msg_in["temp"]
+    }
+    json_body = [
+    {
+        "measurement": "DataArea1",
+        "tags": {
+            "location":"Area1",
+            "device": "ESP32"
+        },
+        "time": time.localtime(),
+        "fields": {
+            "value": fields
+        }
+    }
+]
+    clientDB.write_points(json_body)
     # client_AWS.publish(topic_DHT,msg.payload)
 
 def on_messageAWS(clientCB, userdata, msg):

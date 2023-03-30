@@ -2,3 +2,4 @@ python-dotenv==1.0.0
 paho-mqtt==1.6.1
 protobuf==3.19.6 
 influxdb_client==1.36.1
+influxdb==5.3.1
