@@ -222,7 +222,7 @@ def publishNodeBirth():
 
     # Publish the node birth certificate
     byteArray = bytearray(payload.SerializeToString())
-    client_AWS.publish("spBv1.0/" + groupID + "/NBIRTH/" + edgeNodeId, byteArray, 0, False)
+    client_AWS.publish("spBv1.0/" + groupID + "/NBIRTH/" + edgeNodeId, byteArray, 1, True)
 ######################################################################
 
 
@@ -243,7 +243,7 @@ def publishDeviceBirth():
 
     # Publish the initial data with the Device BIRTH certificate
     totalByteArray = bytearray(payload.SerializeToString())
-    client_AWS.publish("spBv1.0/" + groupID + "/DBIRTH/" + edgeNodeId + "/" + deviceID, totalByteArray, 0, False)
+    client_AWS.publish("spBv1.0/" + groupID + "/DBIRTH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, True)
 ######################################################################
 
 
@@ -258,7 +258,7 @@ def publishDeviceDeath():
 
     # Publish the initial data with the Device DEATH certificate
     totalByteArray = bytearray(payload.SerializeToString())
-    client_AWS.publish("spBv1.0/" + groupID + "/DDEATH/" + edgeNodeId + "/" + deviceID, totalByteArray, 0, False)
+    client_AWS.publish("spBv1.0/" + groupID + "/DDEATH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, True)
 ######################################################################
 
 
@@ -309,7 +309,7 @@ def handle_process():
 
     deathPayload = sparkplug.getNodeDeathPayload()
     deathByteArray = bytearray(deathPayload.SerializeToString())
-    client_AWS.will_set("spBv1.0/" + groupID + "/NDEATH/" + edgeNodeId, deathByteArray, 0, False)
+    client_AWS.will_set("spBv1.0/" + groupID + "/NDEATH/" + edgeNodeId, deathByteArray, 1, True)
 
     # client_AWS.connect(mqttBrokerAWS, mqttPORT, mqttKeepAlive)
     time.sleep(.1)
