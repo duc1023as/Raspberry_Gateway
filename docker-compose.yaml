@@ -35,10 +35,8 @@ services:
       - TABLE_NAME=DataArea1
     volumes:
       - ./influxdb-data:/var/lib/influxdb2
-      - ./scripts/init_influxdb.sh:/init_influxdb.sh
-    command: 
-      - chmod +x /init_influxdb.sh
-      - bash -c "/init_influxdb.sh && influxd"
+      - ./scripts/init_influxdb.sh:/docker-entrypoint-initdb.d/initdb
+    command: influxd
   python-client:
     build:
       context: .
