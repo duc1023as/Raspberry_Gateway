@@ -57,12 +57,14 @@ portDB = os.getenv("INFLUXDB_PORT")
 userDB= os.getenv("INFLUXDB_USER")
 passwordDB= os.getenv("INFLUXDB_PASSWORD")
 mydb = os.getenv("INFLUXDB_DB")
+area1db = os.getenv("DATABASE_NAME")
+tableA1 = os.getenv("TABLE_NAME")
 
 print(hostDB)
 print(portDB)
 
 
-clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=mydb) #test local
+clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local
 
 
 # Set up for MQTT local
@@ -130,7 +132,7 @@ def on_message(clientCB, userdata, msg):
     # write_api.write(bucket=bucket, org=org, record=p)
     json_body = [
     {
-        "measurement": "DataArea1",
+        "measurement": tableA1,
         "tags": {
             "location":"Area1",
             "device": "ESP32"
