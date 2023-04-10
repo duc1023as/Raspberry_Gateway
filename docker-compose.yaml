@@ -37,7 +37,7 @@ services:
       - ./influxdb-data:/var/lib/influxdb2
       - ./scripts/init_influxdb.sh:/init_influxdb.sh
     command: 
-      - chmod +x ./init_influxdb.sh
+      - chmod +x /init_influxdb.sh
       - bash -c "/init_influxdb.sh && influxd"
   python-client:
     build:
