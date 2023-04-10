@@ -35,7 +35,7 @@ services:
       - TABLE_NAME=DataArea1
     volumes:
       - ./influxdb-data:/var/lib/influxdb2
-      - ./scripts/initDB.sh:/docker-entrypoint-initdb.d/init_influxdb.sh
+      - ./scripts/init_influxdb.sh:/docker-entrypoint-initdb.d/init_influxdb.sh
   python-client:
     build:
       context: .
