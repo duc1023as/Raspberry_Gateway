@@ -62,7 +62,7 @@ print(hostDB)
 print(portDB)
 
 
-clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=mydb)
+clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=mydb) #test local
 
 
 # Set up for MQTT local
@@ -77,7 +77,7 @@ groupID = "Area1"
 edgeNodeId = "Gateway1"
 deviceID = "ESP32"
 
-client_AWS = MQTT(url=url_AWS, id="AWS").create_connect()
+client_AWS = MQTT(url=url_AWS, id="AWS").create_connectAWS()
 
 # Alias
 class AliasMap:
@@ -141,7 +141,7 @@ def on_message(clientCB, userdata, msg):
         }
     },
 ]
-    clientDB.write_points(json_body)
+    clientDB.write_points(json_body)  #test local
     # client_AWS.publish(topic_DHT,msg.payload)
 
 def on_messageAWS(clientCB, userdata, msg):
@@ -165,11 +165,11 @@ def on_messageAWS(clientCB, userdata, msg):
                 client.publish(topic_LED,payload_Local,0,False)
                 # Create the DDATA payload - Use the alias because this isn't the DBIRTH
                 payload = sparkplug.getDdataPayload()
-                addMetric(payload, None, AliasMap.Esp32_led, MetricDataType.Boolean, newValue)
+                addMetric(payload, "output/Led", AliasMap.Esp32_led, MetricDataType.Boolean, newValue)
 
                 # Publish a message data
                 byteArray = bytearray(payload.SerializeToString())
-                client_AWS.publish("spBv1.0/" + groupID + "/DDATA/" + edgeNodeId + "/" + deviceID, byteArray, 0, False)
+                client_AWS.publish("spBv1.0/" + groupID + "/DDATA/" + edgeNodeId + "/" + deviceID, byteArray, 0, True) # change 7/4
             else:
                 print( "Unknown command: " + metric.name)
     else:
@@ -177,7 +177,6 @@ def on_messageAWS(clientCB, userdata, msg):
 
     print( "Done publishing")
 ##########################################################################################
-
 
 def on_message_ONL(clientCB, userdata, msg):
     print("Message arrived from topic: " + msg.topic)
@@ -222,7 +221,7 @@ def publishNodeBirth():
 
     # Publish the node birth certificate
     byteArray = bytearray(payload.SerializeToString())
-    client_AWS.publish("spBv1.0/" + groupID + "/NBIRTH/" + edgeNodeId, byteArray, 1, True)
+    client_AWS.publish("spBv1.0/" + groupID + "/NBIRTH/" + edgeNodeId, byteArray, 1, False)
 ######################################################################
 
 
@@ -243,7 +242,7 @@ def publishDeviceBirth():
 
     # Publish the initial data with the Device BIRTH certificate
     totalByteArray = bytearray(payload.SerializeToString())
-    client_AWS.publish("spBv1.0/" + groupID + "/DBIRTH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, True)
+    client_AWS.publish("spBv1.0/" + groupID + "/DBIRTH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, False)
 ######################################################################
 
 
@@ -258,7 +257,7 @@ def publishDeviceDeath():
 
     # Publish the initial data with the Device DEATH certificate
     totalByteArray = bytearray(payload.SerializeToString())
-    client_AWS.publish("spBv1.0/" + groupID + "/DDEATH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, True)
+    client_AWS.publish("spBv1.0/" + groupID + "/DDEATH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, False)
 ######################################################################
 
 
@@ -307,9 +306,9 @@ def handle_process():
     client_AWS.on_message = on_messageAWS
     client_AWS.on_log = on_log
 
-    deathPayload = sparkplug.getNodeDeathPayload()
-    deathByteArray = bytearray(deathPayload.SerializeToString())
-    client_AWS.will_set("spBv1.0/" + groupID + "/NDEATH/" + edgeNodeId, deathByteArray, 1, True)
+    # deathPayload = sparkplug.getNodeDeathPayload()
+    # deathByteArray = bytearray(deathPayload.SerializeToString())
+    # client_AWS.will_set("spBv1.0/" + groupID + "/NDEATH/" + edgeNodeId, deathByteArray, 1, False) # change 10/4
 
     # client_AWS.connect(mqttBrokerAWS, mqttPORT, mqttKeepAlive)
     time.sleep(.1)
