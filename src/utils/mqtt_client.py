@@ -138,8 +138,8 @@ def on_message(clientCB, userdata, msg):
             "device": "ESP32"
         },
         "fields": {
-            "temperature": msg_in["temp"],
-            "humidity": msg_in["hum"]
+            "temperature": float(msg_in["temp"]),
+            "humidity": float(msg_in["hum"])
         }
     },
 ]

@@ -37,7 +37,7 @@ services:
       - INFLUX_PORT=8086
     volumes:
       - ./influxdb-data:/var/lib/influxdb2
-      - ./scripts/init_influxdb.sh:/docker-entrypoint-initdb.d/initdb
+      # - ./scripts/init_influxdb.sh:/docker-entrypoint-initdb.d/initdb
     command: influxd
   python-client:
     build:
