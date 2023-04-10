@@ -58,7 +58,7 @@ services:
       - INFLUXDB_PORT=8086
       - INFLUXDB_USER=duc1023as
       - INFLUXDB_PASSWORD=doantotnghiep
-      - DATABASE_NAME=Area1
+      - DATABASE_NAME=Test
       - TABLE_NAME=DataArea1
     command: python3 main.py
 # volumes:
