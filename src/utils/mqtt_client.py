@@ -28,6 +28,8 @@ passworld_local = os.getenv("PASSWORD")
 port_local = os.getenv("PORT")
 
 url_AWS = os.getenv("URL_AWS")
+user_AWS = os.getenv("USER_AWS")
+password_AWS = os.getenv("PWD_AWS")
 
 client = MQTT(
     url=url_local,
@@ -64,7 +66,7 @@ print(hostDB)
 print(portDB)
 
 
-clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local
+clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local 15-04-2022
 
 
 # Set up for MQTT local
@@ -73,13 +75,15 @@ topic_LED = "ESP32/LED"
 topic_STATUS = "ESP32/STATUS"
 
 # Set up for MQTT AWS and enable Sparkplug
-mqttBrokerAWS ="broker.hivemq.com"
+# mqttBrokerAWS ="broker.hivemq.com"
+mqttBrokerAWS ="13.115.13.210"
 namespace = "spBv1.0"
 groupID = "Area1"
 edgeNodeId = "Gateway1"
 deviceID = "ESP32"
 
-client_AWS = MQTT(url=url_AWS, id="AWS").create_connectAWS()
+# client_AWS = MQTT(url=url_AWS, id="AWS").create_connectAWS() #change 15/04/2023
+client_AWS = MQTT(url=url_AWS,user=user_AWS,password=password_AWS, id="AWS").create_connectAWS() #change 15/04/2023
 
 # Alias
 class AliasMap:
@@ -143,7 +147,7 @@ def on_message(clientCB, userdata, msg):
         }
     },
 ]
-    clientDB.write_points(json_body)  #test local
+    clientDB.write_points(json_body)  #test local 15-04-2022
     # client_AWS.publish(topic_DHT,msg.payload)
 
 def on_messageAWS(clientCB, userdata, msg):
