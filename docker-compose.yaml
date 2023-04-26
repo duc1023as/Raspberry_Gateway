@@ -59,6 +59,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    devices:
+      -"/dev/ttyUSB0:/dev/ttyUSB0"
     volumes:
       - /dev:/dev
     restart: always
