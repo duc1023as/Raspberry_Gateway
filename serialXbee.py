@@ -114,8 +114,6 @@ def main2():
 
     try:
         def data_receive_callback(xbee_message):
-            if device is not None and device.is_open():
-                device.close()
             print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
                                      xbee_message.data))
             # Convert the bytearray to a hex string
@@ -139,9 +137,10 @@ def main2():
                 print("Not Type 1")
         device.add_data_received_callback(data_receive_callback)
         print("Waiting for data...\n")
-        input() 
-    except EOFError:
-        print("EOF")
+        while True:
+            time.sleep(2)
+    except Exception as ex:
+        print("Error : ",str(ex))
         time.sleep(5) 
         main2()     
 
