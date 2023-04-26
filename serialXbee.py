@@ -136,8 +136,9 @@ def main2(Thread):
                 print("Not Type 1")
         device.add_data_received_callback(data_receive_callback)
         print("Waiting for data...\n")
-        while True:
-            input()          
+        input() 
+    except EOFError:
+        print("EOF")         
     finally:
         if device is not None and device.is_open():
             device.close()
