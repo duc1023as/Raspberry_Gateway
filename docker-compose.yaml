@@ -15,16 +15,6 @@ services:
     ports:
       - "8090:8086"
     environment:
-      # - DOCKER_INFLUXDB_INIT_MODE=setup
-      # - DOCKER_INFLUXDB_INIT_USERNAME=duc1023as
-      # - DOCKER_INFLUXDB_INIT_PASSWORD=doantotnghiep
-      # - DOCKER_INFLUXDB_INIT_ORG=HCMUT
-      # - DOCKER_INFLUXDB_INIT_BUCKET=Test
-      # - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
-      # - DOCKER_INFLUXDB_INIT_AUTH_TOKEN=DtBwUZy5EgIBiK-9LASY9XAxKpVflq7_jT7eb_r-oSabet9czvHUbPGZQeRuIwbb7-k1wCK9qesaC-coZnzyTA==
-      # - DOCKER_INFLUXDB_INIT_RETENTION=1d
-      # - DOCKER_INFLUXDB_INIT_SHARD_DURATION=1h
-
       - INFLUXDB_DB=Test
       - INFLUXDB_ADMIN_USER=duc1023as
       - INFLUXDB_ADMIN_PASSWORD=doantotnghiep
@@ -51,10 +41,11 @@ services:
       - PORT=1883
       - USER=mqttBroker
       - PASSWORD=dominhduc
-      # - URL_AWS=broker.hivemq.com
       - URL_AWS=13.115.13.210
       - USER_AWS=mqttBroker
       - PWD_AWS=dominhduc
+      - TOPIC_WILL=ESP32/ON
+      - TOPIC_WILLZb=Zigbee/ON
       - INFLUXDB_DB=Test
       - INFLUXDB_HOST=influxdb
       - INFLUXDB_PORT=8086
@@ -62,6 +53,7 @@ services:
       - INFLUXDB_PASSWORD=doantotnghiep
       - DATABASE_NAME=Test
       - TABLE_NAME=DataArea1
+      - TABLE_NAME_Zb=DataArea2
     command: python3 main.py
 # volumes:
 #   influxdb-data:

@@ -1,6 +1,4 @@
 import sys
-# sys.path.insert(0, "../core/")
-# print(sys.path)
 
 import paho.mqtt.client as mqtt
 from ..core import sparkplug_b as sparkplug
@@ -11,9 +9,6 @@ import string
 import json
 import os
 import time
-
-# from influxdb_client import InfluxDBClient, Point, WritePrecision
-# from influxdb_client.client.write_api import SYNCHRONOUS
 
 from influxdb import InfluxDBClient
 
@@ -26,6 +21,10 @@ url_local = os.getenv("URL_MQTT")
 user_local = os.getenv("USER")
 passworld_local = os.getenv("PASSWORD")
 port_local = os.getenv("PORT")
+topic_will = os.getenv("TOPIC_WILL")
+msg_will = {
+    "status":"OFF",
+}
 
 url_AWS = os.getenv("URL_AWS")
 user_AWS = os.getenv("USER_AWS")
@@ -37,22 +36,10 @@ client = MQTT(
     password=passworld_local,
     port=port_local,
     id='local',
-    mqttKeepAlive=60
+    mqttKeepAlive=60,
+    topic_will=topic_will,
+    msg_will=json.dumps(msg_will)
     ).create_connect()
-
-# Set up for InfuxDB
-# You can generate a Token from the "Tokens Tab" in the UI
-
-# org = os.getenv("ORG")
-# token= os.getenv("TOKEN")
-# bucket= os.getenv("BUCKET")
-
-# url = os.getenv("URL")
-
-# clientDB = InfluxDBClient(url=url, token=token,org=org)
-# # clientDB = InfluxDBClient(url=url, token=token)
-
-# write_api = clientDB.write_api(write_options=SYNCHRONOUS)
 
 hostDB = os.getenv("INFLUXDB_HOST")
 portDB = os.getenv("INFLUXDB_PORT")
@@ -61,12 +48,13 @@ passwordDB= os.getenv("INFLUXDB_PASSWORD")
 mydb = os.getenv("INFLUXDB_DB")
 area1db = os.getenv("DATABASE_NAME")
 tableA1 = os.getenv("TABLE_NAME")
+tableA2 = os.getenv("TABLE_NAME_Zb")
 
 print(hostDB)
 print(portDB)
 
 
-clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local 15-04-2022
+clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local 23-04-2022
 
 
 # Set up for MQTT local
@@ -74,13 +62,20 @@ topic_DHT = "ESP32/DHT"
 topic_LED = "ESP32/LED"
 topic_STATUS = "ESP32/STATUS"
 
+# Set up for MQTT local
+topic_DHT_Zb = "Zigbee/DHT"
+topic_LED_Zb = "Zigbee/LED"
+topic_STATUS_Zb = "Zigbee/ON"
+
 # Set up for MQTT AWS and enable Sparkplug
 # mqttBrokerAWS ="broker.hivemq.com"
 mqttBrokerAWS ="13.115.13.210"
 namespace = "spBv1.0"
 groupID = "Area1"
+groupID2 = "Area2"
 edgeNodeId = "Gateway1"
 deviceID = "ESP32"
+deviceID2 = "Zigbee"
 
 # client_AWS = MQTT(url=url_AWS, id="AWS").create_connectAWS() #change 15/04/2023
 client_AWS = MQTT(url=url_AWS,user=user_AWS,password=password_AWS, id="AWS").create_connectAWS() #change 15/04/2023
@@ -96,6 +91,10 @@ class AliasMap:
     Esp32_tem = 6
     Esp32_hum = 7
     Esp32_led = 8
+    Zigbee_tem = 9
+    Zigbee_hum = 10
+    Zigbee_led = 11
+    
 
 
 ######################################################################
@@ -108,7 +107,9 @@ def on_connect(clientCB, userdata, flags, rc):
         print("Failed to connect with result code "+str(rc))
         sys.exit()
     client.subscribe(topic_STATUS,0)
+    client.subscribe(topic_STATUS_Zb,0)
     client.subscribe(topic_DHT,0)
+    client.subscribe(topic_DHT_Zb,0)
 ######################################################################
 
 def on_connectAWS(clientCB, userdata, flags, rc):
@@ -124,6 +125,8 @@ def on_connectAWS(clientCB, userdata, flags, rc):
     # reconnect then subscriptions will be renewed.
     client_AWS.subscribe("spBv1.0/" + groupID + "/NCMD/" + edgeNodeId )
     client_AWS.subscribe("spBv1.0/"+ groupID + "/DCMD/" + edgeNodeId + "/" + deviceID)
+    client_AWS.subscribe("spBv1.0/" + groupID2 + "/NCMD/" + edgeNodeId )
+    client_AWS.subscribe("spBv1.0/"+ groupID2 + "/DCMD/" + edgeNodeId + "/" + deviceID2)
 
 def on_message(clientCB, userdata, msg):
     print("Message arrived from topic: " + msg.topic)
@@ -131,9 +134,6 @@ def on_message(clientCB, userdata, msg):
     msg_decode=str(msg.payload.decode("utf-8","ignore"))
     msg_in=json.loads(msg_decode)
     publishDeviceData(msg_in)
-
-    # p = Point("DataArea1").tag("location", "Area 1").tag("device","ESP32").field("temperature", msg_in["temp"]).field("humidity",msg_in["hum"])
-    # write_api.write(bucket=bucket, org=org, record=p)
     json_body = [
     {
         "measurement": tableA1,
@@ -147,13 +147,37 @@ def on_message(clientCB, userdata, msg):
         }
     },
 ]
-    clientDB.write_points(json_body)  #test local 15-04-2022
+    clientDB.write_points(json_body)  #test local 23-04-2022
     # client_AWS.publish(topic_DHT,msg.payload)
+
+
+def on_message_Zigbee(clientCB, userdata, msg):
+    print("Message arrived from topic: " + msg.topic)
+    print(str(msg.payload.decode("utf-8")))
+    msg_decode=str(msg.payload.decode("utf-8","ignore"))
+    msg_in=json.loads(msg_decode)
+    publishDeviceDataZb(msg_in)
+    json_body = [
+    {
+        "measurement": tableA2,
+        "tags": {
+            "location":"Area2",
+            "device": "Zigbee"
+        },
+        "fields": {
+            "temperature": float(msg_in["temp"]),
+            "humidity": float(msg_in["hum"])
+        }
+    },
+    ]
+    clientDB.write_points(json_body)  #test local 23-04-2022
+    # client_AWS.publish(topic_DHT,msg.payload)
+
 
 def on_messageAWS(clientCB, userdata, msg):
     print("Message arrived from topic: " + msg.topic)
     tokens = msg.topic.split("/")
-    if tokens[0] == "spBv1.0" and tokens[1] == groupID and (tokens[2] == "NCMD" or tokens[2] == "DCMD") and tokens[3] == edgeNodeId:
+    if msg.topic == 'spBv1.0/Area1/DCMD/Gateway1/ESP32':
         inboundPayload = sparkplug_b_pb2.Payload()
         inboundPayload.ParseFromString(msg.payload)
         for metric in inboundPayload.metrics:
@@ -176,8 +200,34 @@ def on_messageAWS(clientCB, userdata, msg):
                 # Publish a message data
                 byteArray = bytearray(payload.SerializeToString())
                 client_AWS.publish("spBv1.0/" + groupID + "/DDATA/" + edgeNodeId + "/" + deviceID, byteArray, 0, True) # change 7/4
-            else:
-                print( "Unknown command: " + metric.name)
+            # else:
+            #     print( "Unknown command: " + metric.name)
+
+    elif msg.topic == 'spBv1.0/Area2/DCMD/Gateway1/Zigbee':
+        inboundPayload = sparkplug_b_pb2.Payload()
+        inboundPayload.ParseFromString(msg.payload)
+        for metric in inboundPayload.metrics:
+            if metric.name == "output/Led" or metric.alias == AliasMap.Zigbee_led:
+                newValue = metric.boolean_value
+                if(newValue):
+                    newValue = 1
+                else:
+                    newValue = 0
+                print( "CMD message for output/Led - New Value: {}".format(newValue))
+                newValue_Local = {
+                    "led" : newValue
+                }
+                # payload_Local = str(newValue_Local)
+                client.publish(topic_LED_Zb,json.dumps(newValue_Local),0,False)
+                # Create the DDATA payload - Use the alias because this isn't the DBIRTH
+                payload = sparkplug.getDdataPayload()
+                addMetric(payload, "output/Led", AliasMap.Zigbee_led, MetricDataType.Boolean, newValue)
+
+                # Publish a message data
+                byteArray = bytearray(payload.SerializeToString())
+                client_AWS.publish("spBv1.0/" + groupID2 + "/DDATA/" + edgeNodeId + "/" + deviceID2, byteArray, 0, True) # change 7/4
+            # else:
+            #     print( "Unknown command: " + metric.name)
     else:
         print( "Unknown command...")
 
@@ -195,6 +245,18 @@ def on_message_ONL(clientCB, userdata, msg):
     else:
         print("Status is OFF")
         publishDeviceDeath()
+
+def on_message_ONLZb(clientCB, userdata, msg):
+    print("Message arrived from topic: " + msg.topic)
+    print(str(msg.payload.decode("utf-8")))
+    msg_decode=str(msg.payload.decode("utf-8","ignore"))
+    msg_in=json.loads(msg_decode)
+    if(msg_in["status"] == "ON"):
+        print("Status is ON")
+        publishDeviceBirthZb()
+    else:
+        print("Status is OFF")
+        publishDeviceDeathZb()
 
 def on_subscribe(mqttc, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
@@ -251,6 +313,26 @@ def publishDeviceBirth():
     client_AWS.publish("spBv1.0/" + groupID + "/DBIRTH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, False)
 ######################################################################
 
+######################################################################
+# Publish the DBIRTH certificate
+######################################################################
+def publishDeviceBirthZb():
+    print( "Publishing Device Birth")
+
+    # Get the payload
+    payload = sparkplug.getDeviceBirthPayload()
+
+    # Add some device metrics
+    addNullMetric(payload, "input/Temperature", AliasMap.Zigbee_tem, MetricDataType.Float)
+    addNullMetric(payload, "input/Humidity", AliasMap.Zigbee_hum, MetricDataType.Float)
+    addNullMetric(payload, "output/Led", AliasMap.Zigbee_led, MetricDataType.Boolean)
+
+
+    # Publish the initial data with the Device BIRTH certificate
+    totalByteArray = bytearray(payload.SerializeToString())
+    client_AWS.publish("spBv1.0/" + groupID2 + "/DBIRTH/" + edgeNodeId + "/" + deviceID2, totalByteArray, 1, False)
+######################################################################
+
 
 ######################################################################
 # Publish the DDEATH certificate
@@ -264,6 +346,20 @@ def publishDeviceDeath():
     # Publish the initial data with the Device DEATH certificate
     totalByteArray = bytearray(payload.SerializeToString())
     client_AWS.publish("spBv1.0/" + groupID + "/DDEATH/" + edgeNodeId + "/" + deviceID, totalByteArray, 1, False)
+######################################################################
+
+######################################################################
+# Publish the DDEATH certificate
+######################################################################
+def publishDeviceDeathZb():
+    print( "Publishing Device Death")
+
+    # Get the payload
+    payload = sparkplug.getDdataPayload()
+
+    # Publish the initial data with the Device DEATH certificate
+    totalByteArray = bytearray(payload.SerializeToString())
+    client_AWS.publish("spBv1.0/" + groupID2 + "/DDEATH/" + edgeNodeId + "/" + deviceID2, totalByteArray, 1, False)
 ######################################################################
 
 
@@ -286,6 +382,24 @@ def publishDeviceData(data):
 
 
 ######################################################################
+# Publish the DDATA certificate
+######################################################################
+def publishDeviceDataZb(data):
+    print( "Publishing Data Device")
+
+    # Get the payload
+    payload = sparkplug.getDdataPayload()
+
+    addMetric(payload, "input/temperature", AliasMap.Zigbee_tem, MetricDataType.Float,data["temp"])
+    addMetric(payload, "input/humidity", AliasMap.Zigbee_hum, MetricDataType.Float,data["hum"])
+
+    # Publish the initial data with the Device DEATH certificate
+    totalByteArray = bytearray(payload.SerializeToString())
+    client_AWS.publish("spBv1.0/" + groupID2 + "/DDATA/" + edgeNodeId + "/" + deviceID2, totalByteArray, 0, False)
+######################################################################
+
+
+######################################################################
 # Main Application
 ######################################################################
 
@@ -300,6 +414,8 @@ def handle_process():
     client.on_message = on_message
     client.on_log = on_log
     client.message_callback_add(topic_STATUS,on_message_ONL)
+    client.message_callback_add(topic_DHT_Zb,on_message_Zigbee)
+    client.message_callback_add(topic_STATUS_Zb,on_message_ONLZb)
     client.loop()
     # client.username_pw_set(myUsername,myPassword)
     # client.connect(serverUrl, mqttPORT, mqttKeepAlive)
