@@ -3,3 +3,5 @@ paho-mqtt==1.6.1
 protobuf==3.19.6 
 influxdb_client==1.36.1
 influxdb==5.3.1
+pyserial==3.5
+digi-xbee==1.4.1

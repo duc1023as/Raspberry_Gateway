@@ -55,5 +55,22 @@ services:
       - TABLE_NAME=DataArea1
       - TABLE_NAME_Zb=DataArea2
     command: python3 main.py
+  python-serial:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /dev:/dev
+    restart: always
+    privileged: true
+    depends_on:
+      - mosquito
+    environment:
+      - URL_MQTT=mosquito
+      - PORT=1883
+      - USER=mqttBroker
+      - PASSWORD=dominhduc
+      - TOPIC_WILLZb=Zigbee/ON
+    command: python3 serialXbee.py
 # volumes:
 #   influxdb-data:
