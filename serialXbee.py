@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 import os
 import json
 import time
-from threading import Thread
+# from threading import Thread
+# import threading
+import _thread
 
 # TODO: Replace with the serial port where your local module is connected to.
 # PORT = "COM8"
@@ -106,7 +108,7 @@ client.on_publish = on_publish
 client.loop_start()
 
 
-def main2(Thread):
+def main2(Dummy):
     print(" +-----------------------------------------+")
     print(" | XBee Python Library Receive Data Sample |")
     print(" +-----------------------------------------+\n")
@@ -142,8 +144,10 @@ def main2(Thread):
     finally:
         if device is not None and device.is_open():
             device.close()
-thread1 = main2("thread 1")
-thread1.start()
+_thread.start_new_thread(main2,("Main",))
+# thread1 = main2()
+# thread1.start()
+
 # if __name__ == '__main__':
 #     main()
 
