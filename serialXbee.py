@@ -13,8 +13,8 @@ from threading import Thread
 import threading
 
 # TODO: Replace with the serial port where your local module is connected to.
-# PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+#PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -107,7 +107,7 @@ client.on_publish = on_publish
 client.loop_start()
 
 
-def main2(Thread):
+def main2():
     print(" +-----------------------------------------+")
     print(" | XBee Python Library Receive Data Sample |")
     print(" +-----------------------------------------+\n")
@@ -144,8 +144,13 @@ def main2(Thread):
         if device is not None and device.is_open():
             device.close()
 # _thread.start_new_thread(main2,("Main",))
-thread1 = main2()
-thread1.start()
+t1 = threading.Thread(target=main2)
+t1.start()
+
+client.loop_stop()
+t1.join()
+# thread1 = main2("main")
+# thread1.start()
 
 # if __name__ == '__main__':
 #     main()
