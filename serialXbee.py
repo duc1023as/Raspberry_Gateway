@@ -144,7 +144,7 @@ def main2():
         if device is not None and device.is_open():
             device.close()
 # _thread.start_new_thread(main2,("Main",))
-t1 = threading.Thread(target=main2)
+t1 = threading.Thread()
 t1.start()
 
 # client.loop_stop()
