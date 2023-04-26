@@ -147,8 +147,8 @@ def main2():
 t1 = threading.Thread(target=main2)
 t1.start()
 
-client.loop_stop()
-t1.join()
+# client.loop_stop()
+# t1.join()
 # thread1 = main2("main")
 # thread1.start()
 
