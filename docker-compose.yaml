@@ -63,7 +63,7 @@ services:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
     volumes:
       - /dev:/dev
-      - ./:./
+      - /:/
     restart: always
     privileged: true
     depends_on:
