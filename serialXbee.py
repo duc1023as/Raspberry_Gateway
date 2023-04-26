@@ -115,7 +115,7 @@ def main2():
     try:
         def data_receive_callback(xbee_message):
             if device is not None and device.is_open():
-                device.close()  
+                device.close()
             print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
                                      xbee_message.data))
             # Convert the bytearray to a hex string
@@ -142,9 +142,10 @@ def main2():
         input() 
     except EOFError:
         print("EOF")    
-        main2()
+        main2()     
+
 # _thread.start_new_thread(main2,("Main",))
-t1 = threading.Thread()
+t1 = threading.Thread(target=main2)
 t1.start()
 
 # client.loop_stop()
