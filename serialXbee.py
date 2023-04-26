@@ -141,7 +141,8 @@ def main2():
         print("Waiting for data...\n")
         input() 
     except EOFError:
-        print("EOF")    
+        print("EOF")
+        time.sleep(5) 
         main2()     
 
 # _thread.start_new_thread(main2,("Main",))
