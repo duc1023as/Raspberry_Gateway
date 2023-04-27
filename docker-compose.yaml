@@ -54,6 +54,8 @@ services:
       - DATABASE_NAME=Test
       - TABLE_NAME=DataArea1
       - TABLE_NAME_Zb=DataArea2
+    volumes:
+      - ./:/app
     command: python3 main.py
   python-serial:
     build:
