@@ -14,8 +14,8 @@ import threading
 import serial
 
 # TODO: Replace with the serial port where your local module is connected to.
-#PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+# PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -151,6 +151,7 @@ def main2():
         print("Waiting for data...\n") 
 
         while True:
+            device.reset()
             pass
 
         # while True:
@@ -171,8 +172,10 @@ def main2():
 
 t1 = threading.Thread(target=main2)
 t1.start()
+client.loop_stop()
 t1.join()
 del t1
+
 
 # client.loop_stop()
 # t1.join()
