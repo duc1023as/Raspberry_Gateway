@@ -140,8 +140,9 @@ def main2():
         else:
             raise Exception("Not found device")
             
-        print("Waiting for data...\n")
-        input()
+
+        while True:
+            print("Waiting for data...\n")
 
         # while True:
             # time.sleep(2)
