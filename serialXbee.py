@@ -172,7 +172,7 @@ def main2():
 
 t1 = threading.Thread(target=main2)
 t1.start()
-client.loop_stop()
+# client.loop_stop()
 t1.join()
 del t1
 
