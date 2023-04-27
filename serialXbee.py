@@ -139,10 +139,11 @@ def main2():
             device.add_data_received_callback(data_receive_callback)
         else:
             raise Exception("Not found device")
-            
+        
+        print("Waiting for data...\n") 
 
         while True:
-            print("Waiting for data...\n")
+            pass
 
         # while True:
             # time.sleep(2)
