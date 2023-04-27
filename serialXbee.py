@@ -11,6 +11,7 @@ import json
 import time
 from threading import Thread
 import threading
+import serial
 
 # TODO: Replace with the serial port where your local module is connected to.
 #PORT = "COM8"
@@ -56,8 +57,14 @@ client = MQTT(
 try:
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
-except:
-    print("Not found port")
+
+except serial.serialutil.SerialException as ex:
+    print("Serial Error: ", str(ex))
+    exit(-1)
+
+except Exception as ex:
+    print("Serial Error: ", str(ex))
+    exit(-1)
 
 ######################################################################
 # The callback for when the client receives a CONNACK response from the server.
@@ -135,6 +142,7 @@ def main2():
                 client.publish(topic_DHT,json.dumps(value),0,False)
             else:
                 print("Not Type 1")
+
         if device and device.is_open():
             device.add_data_received_callback(data_receive_callback)
         else:
@@ -147,6 +155,11 @@ def main2():
 
         # while True:
             # time.sleep(2)
+
+    except serial.serialutil.SerialException as ex:
+        print("Serial Error: ", str(ex))
+        exit(-1)
+
     except Exception as ex:
         print("Error : ",str(ex))
     #     # time.sleep(5) 
