@@ -13,7 +13,7 @@ from threading import Thread
 import threading
 
 # TODO: Replace with the serial port where your local module is connected to.
-# PORT = "COM8"
+#PORT = "COM8"
 PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
@@ -135,18 +135,29 @@ def main2():
                 client.publish(topic_DHT,json.dumps(value),0,False)
             else:
                 print("Not Type 1")
-        device.add_data_received_callback(data_receive_callback)
+        if device and device.is_open():
+            device.add_data_received_callback(data_receive_callback)
+        else:
+            raise Exception("Not found device")
+            
         print("Waiting for data...\n")
-        while True:
-            time.sleep(2)
+        input()
+
+        # while True:
+            # time.sleep(2)
     except Exception as ex:
         print("Error : ",str(ex))
-        time.sleep(5) 
-        main2()     
-
+    #     # time.sleep(5) 
+    #     # main2()     
+    finally:
+        if device is not None and device.is_open():
+            device.close()
 # _thread.start_new_thread(main2,("Main",))
+
 t1 = threading.Thread(target=main2)
 t1.start()
+t1.join()
+del t1
 
 # client.loop_stop()
 # t1.join()
