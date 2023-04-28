@@ -416,7 +416,7 @@ def handle_process():
     client.message_callback_add(topic_STATUS,on_message_ONL)
     client.message_callback_add(topic_DHT_Zb,on_message_Zigbee)
     client.message_callback_add(topic_STATUS_Zb,on_message_ONLZb)
-    client.loop()
+    client.loop_start()
     # client.username_pw_set(myUsername,myPassword)
     # client.connect(serverUrl, mqttPORT, mqttKeepAlive)
 
@@ -434,7 +434,7 @@ def handle_process():
 
     # client_AWS.connect(mqttBrokerAWS, mqttPORT, mqttKeepAlive)
     time.sleep(.1)
-    client_AWS.loop()
+    client_AWS.loop_start()
 
     #Publish Birth
     publishNodeBirth()
@@ -449,8 +449,10 @@ def handle_process():
 def main():
     handle_process()
     while True:
-        # Sit and wait for inbound or outbound events
-        for _ in range(5):
-            time.sleep(.1)
-            client.loop()
-            client_AWS.loop()
+        pass
+    # while True:    28/4/2023
+    #     # Sit and wait for inbound or outbound events
+    #     for _ in range(5):
+    #         time.sleep(.1)
+    #         client.loop()
+    #         client_AWS.loop()
