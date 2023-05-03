@@ -41,7 +41,7 @@ services:
       - PORT=1883
       - USER=mqttBroker
       - PASSWORD=dominhduc
-      - URL_AWS=13.115.13.210
+      - URL_AWS=54.249.51.79
       - USER_AWS=mqttBroker
       - PWD_AWS=dominhduc
       - TOPIC_WILL=ESP32/ON
@@ -77,5 +77,22 @@ services:
       - PASSWORD=dominhduc
       - TOPIC_WILLZb=Zigbee/ON
     command: python3 serialXbee.py
+  python-data:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    restart: always
+    depends_on:
+      - mosquito
+    environment:
+      - URL_MQTT=mosquito
+      - PORT=1883
+      - USER=mqttBroker
+      - PASSWORD=dominhduc
+      - TOPIC_WILL_LOG=dataIoT
+      - URL_CSharp=http://54.249.51.79:8000/api
+    command: python3 logdata.py
 # volumes:
 #   influxdb-data:

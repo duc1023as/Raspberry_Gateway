@@ -127,6 +127,7 @@ def on_connectAWS(clientCB, userdata, flags, rc):
     client_AWS.subscribe("spBv1.0/"+ groupID + "/DCMD/" + edgeNodeId + "/" + deviceID)
     client_AWS.subscribe("spBv1.0/" + groupID2 + "/NCMD/" + edgeNodeId )
     client_AWS.subscribe("spBv1.0/"+ groupID2 + "/DCMD/" + edgeNodeId + "/" + deviceID2)
+    client_AWS.subscribe("STATE/IoT2023")
 
 def on_message(clientCB, userdata, msg):
     print("Message arrived from topic: " + msg.topic)
@@ -228,6 +229,12 @@ def on_messageAWS(clientCB, userdata, msg):
                 client_AWS.publish("spBv1.0/" + groupID2 + "/DDATA/" + edgeNodeId + "/" + deviceID2, byteArray, 0, True) # change 7/4
             # else:
             #     print( "Unknown command: " + metric.name)
+    elif msg.topic == 'STATE/IoT2023':
+        print("Hi")
+        msg_decode=str(msg.payload.decode("utf-8","ignore"))
+        msg_in=json.loads(msg_decode)
+        if(msg_in['status'] == 'ON'):
+            publishNodeBirth()
     else:
         print( "Unknown command...")
 
