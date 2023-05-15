@@ -1,5 +1,4 @@
 version: '3'
-
 services:
   mosquito:
     image: eclipse-mosquitto:latest
@@ -21,7 +20,8 @@ services:
       - INFLUXDB_HTTP_AUTH_ENABLED=true
       - INFLUXDB_USER=duc1023as
       - INFLUXDB_USER_PASSWORD=doantotnghiep
-      - DATABASE_NAME=Area1
+      # - DATABASE_NAME=Area1
+      - DATABASE_NAME=DataDevice
       - TABLE_NAME=DataArea1
       - INFLUX_HOST=localhost
       - INFLUX_PORT=8086
@@ -41,9 +41,10 @@ services:
       - PORT=1883
       - USER=mqttBroker
       - PASSWORD=dominhduc
-      - URL_AWS=54.249.51.79
+      - URL_AWS=13.231.107.209
       - USER_AWS=mqttBroker
       - PWD_AWS=dominhduc
+      - PORT_AWS=1884
       - TOPIC_WILL=ESP32/ON
       - TOPIC_WILLZb=Zigbee/ON
       - INFLUXDB_DB=Test
@@ -51,7 +52,8 @@ services:
       - INFLUXDB_PORT=8086
       - INFLUXDB_USER=duc1023as
       - INFLUXDB_PASSWORD=doantotnghiep
-      - DATABASE_NAME=Test
+      # - DATABASE_NAME=Test
+      - DATABASE_NAME=DataDevice
       - TABLE_NAME=DataArea1
       - TABLE_NAME_Zb=DataArea2
     volumes:
@@ -92,7 +94,7 @@ services:
       - USER=mqttBroker
       - PASSWORD=dominhduc
       - TOPIC_WILL_LOG=dataIoT
-      - URL_CSharp=http://54.249.51.79:8000/api
+      - URL_CSharp=http://13.231.107.209:5000/api
     command: python3 logdata.py
 # volumes:
 #   influxdb-data:

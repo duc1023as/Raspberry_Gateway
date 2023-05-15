@@ -29,6 +29,7 @@ msg_will = {
 url_AWS = os.getenv("URL_AWS")
 user_AWS = os.getenv("USER_AWS")
 password_AWS = os.getenv("PWD_AWS")
+port_AWS = os.getenv("PORT_AWS")
 
 client = MQTT(
     url=url_local,
@@ -54,7 +55,7 @@ print(hostDB)
 print(portDB)
 
 
-# clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local 27-04-2022
+clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local 27-04-2022
 
 
 # Set up for MQTT local
@@ -78,7 +79,7 @@ deviceID = "ESP32"
 deviceID2 = "Zigbee"
 
 # client_AWS = MQTT(url=url_AWS, id="AWS").create_connectAWS() #change 15/04/2023
-client_AWS = MQTT(url=url_AWS,user=user_AWS,password=password_AWS, id="AWS").create_connectAWS() #change 15/04/2023
+client_AWS = MQTT(url=url_AWS,user=user_AWS,password=password_AWS,port=port_AWS, id="AWS").create_connectAWS() #change 15/04/2023
 
 # Alias
 class AliasMap:
@@ -148,7 +149,7 @@ def on_message(clientCB, userdata, msg):
         }
     },
 ]
-    # clientDB.write_points(json_body)  #test local 27-04-2022
+    clientDB.write_points(json_body)  #test local 27-04-2022
     # client_AWS.publish(topic_DHT,msg.payload)
 
 
@@ -171,7 +172,7 @@ def on_message_Zigbee(clientCB, userdata, msg):
         }
     },
     ]
-    # clientDB.write_points(json_body)  #test local 27-04-2022
+    clientDB.write_points(json_body)  #test local 27-04-2022
     # client_AWS.publish(topic_DHT,msg.payload)
 
 
