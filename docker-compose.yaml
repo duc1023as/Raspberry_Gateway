@@ -14,7 +14,8 @@ services:
     ports:
       - "8090:8086"
     environment:
-      - INFLUXDB_DB=Test
+      # - INFLUXDB_DB=Test
+      - INFLUXDB_DB=DataDevice
       - INFLUXDB_ADMIN_USER=duc1023as
       - INFLUXDB_ADMIN_PASSWORD=doantotnghiep
       - INFLUXDB_HTTP_AUTH_ENABLED=true
@@ -23,6 +24,7 @@ services:
       # - DATABASE_NAME=Area1
       - DATABASE_NAME=DataDevice
       - TABLE_NAME=DataArea1
+      - TABLE_NAME_Zb=DataArea2
       - INFLUX_HOST=localhost
       - INFLUX_PORT=8086
     volumes:
@@ -47,7 +49,7 @@ services:
       - PORT_AWS=1884
       - TOPIC_WILL=ESP32/ON
       - TOPIC_WILLZb=Zigbee/ON
-      - INFLUXDB_DB=Test
+      - INFLUXDB_DB=DataDevice
       - INFLUXDB_HOST=influxdb
       - INFLUXDB_PORT=8086
       - INFLUXDB_USER=duc1023as
