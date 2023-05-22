@@ -194,7 +194,7 @@ def on_messageAWS(clientCB, userdata, msg):
                     "led" : newValue
                 }
                 payload_Local = str(newValue_Local)
-                client.publish(topic_LED,payload_Local,0,False)
+                client.publish(topic_LED,payload_Local,1,False) 
                 # Create the DDATA payload - Use the alias because this isn't the DBIRTH
                 payload = sparkplug.getDdataPayload()
                 addMetric(payload, "output/Led", AliasMap.Esp32_led, MetricDataType.Boolean, newValue)
@@ -220,7 +220,7 @@ def on_messageAWS(clientCB, userdata, msg):
                     "led" : newValue
                 }
                 # payload_Local = str(newValue_Local)
-                client.publish(topic_LED_Zb,json.dumps(newValue_Local),0,False)
+                client.publish(topic_LED_Zb,json.dumps(newValue_Local),1,False)
                 # Create the DDATA payload - Use the alias because this isn't the DBIRTH
                 payload = sparkplug.getDdataPayload()
                 addMetric(payload, "output/Led", AliasMap.Zigbee_led, MetricDataType.Boolean, newValue)

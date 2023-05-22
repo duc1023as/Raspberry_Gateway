@@ -14,7 +14,7 @@ import threading
 import serial
 
 # TODO: Replace with the serial port where your local module is connected to.
-# PORT = "COM8"
+#PORT = "COM8"
 PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
@@ -93,10 +93,15 @@ def on_message(clientCB, userdata, msg):
     msg_decode=str(msg.payload.decode("utf-8","ignore"))
     msg_in=json.loads(msg_decode)
     xbee_network = device.get_network()
+    xbee_network.set_discovery_timeout(4)
     remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
     if remote_device is None:
         print("Could not find the remote device")
+        # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
         remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
+        if remote_device is None:
+            client.publish(topic_will,json.dumps(msg_will),0,True)
+            return
     if(msg_in["led"] == 1):
         bytes_to_send = struct.pack("BB", 0x02, 0x01)
         print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
@@ -141,7 +146,10 @@ def main2():
                 }
                 client.publish(topic_DHT,json.dumps(value),0,False)
             else:
-                print("Not Type 1")
+                print("Type 3")
+                client.publish(topic_will,json.dumps(msg_will),0,True)
+                return
+
 
         if device and device.is_open():
             device.add_data_received_callback(data_receive_callback)
