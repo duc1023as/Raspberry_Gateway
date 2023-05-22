@@ -20,6 +20,7 @@ PORT = "/dev/ttyUSB0"
 BAUD_RATE = 9600
 
 ROUTER1_NODE_ID = "Router"
+# ROUTER2_NODE_ID = "ROUTER3"
 ROUTER2_NODE_ID = "ROUTER3"
 
 
@@ -94,11 +95,11 @@ def on_message(clientCB, userdata, msg):
     msg_in=json.loads(msg_decode)
     xbee_network = device.get_network()
     xbee_network.set_discovery_timeout(4)
-    remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
+    remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
     if remote_device is None:
         print("Could not find the remote device")
         # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
-        remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
+        remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
         if remote_device is None:
             client.publish(topic_will,json.dumps(msg_will),0,True)
             return
