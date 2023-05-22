@@ -94,7 +94,7 @@ def on_message(clientCB, userdata, msg):
     msg_decode=str(msg.payload.decode("utf-8","ignore"))
     msg_in=json.loads(msg_decode)
     xbee_network = device.get_network()
-    xbee_network.set_discovery_timeout(3.5)
+    # xbee_network.set_discovery_timeout(3.5)
     remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
     if remote_device is None:
         print("Could not find the remote device")
