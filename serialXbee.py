@@ -14,8 +14,8 @@ import threading
 import serial
 
 # TODO: Replace with the serial port where your local module is connected to.
-PORT = "COM8"
-# PORT = "/dev/ttyUSB0"
+#PORT = "COM8"
+PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 

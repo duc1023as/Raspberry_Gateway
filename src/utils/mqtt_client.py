@@ -55,7 +55,7 @@ print(hostDB)
 print(portDB)
 
 
-#clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local 27-04-2022
+clientDB = InfluxDBClient(host=hostDB, port=portDB, username=userDB, password=passwordDB, database=area1db) #test local 27-04-2022
 
 
 # Set up for MQTT local
@@ -149,7 +149,7 @@ def on_message(clientCB, userdata, msg):
         }
     },
 ]
-    #clientDB.write_points(json_body)  #test local 27-04-2022
+    clientDB.write_points(json_body)  #test local 27-04-2022
     # client_AWS.publish(topic_DHT,msg.payload)
 
 
@@ -172,7 +172,7 @@ def on_message_Zigbee(clientCB, userdata, msg):
         }
     },
     ]
-    #clientDB.write_points(json_body)  #test local 27-04-2022
+    clientDB.write_points(json_body)  #test local 27-04-2022
     # client_AWS.publish(topic_DHT,msg.payload)
 
 
