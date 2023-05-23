@@ -14,8 +14,8 @@ import threading
 import serial
 
 # TODO: Replace with the serial port where your local module is connected to.
-#PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+# PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -99,8 +99,10 @@ def on_message(clientCB, userdata, msg):
     if remote_device is None:
         print("Could not find the remote device")
         # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+        time.sleep(.3)
         remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
         if remote_device is None:
+            print("Router2 not found")
             client.publish(topic_will,json.dumps(msg_will),0,True)
             return
     if(msg_in["led"] == 1):
