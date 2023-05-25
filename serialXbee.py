@@ -171,10 +171,11 @@ def main2():
 
     except Exception as ex:
         print("Error : ",str(ex))    
-        # exit(-1)
+        exit(-1)
     finally:
         if device is not None and device.is_open():
             device.close()
+            exit(-1)
 
 t1 = threading.Thread(target=main2)
 t1.start()
