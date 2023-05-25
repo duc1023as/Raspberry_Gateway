@@ -14,8 +14,8 @@ import threading
 import serial
 
 # TODO: Replace with the serial port where your local module is connected to.
-#PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+# PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -55,13 +55,13 @@ client = MQTT(
     msg_will=json.dumps(msg_will)
 ).create_connect()
 
-# try:
-device = XBeeDevice(PORT, BAUD_RATE)
-device.open()
+try:
+    device = XBeeDevice(PORT, BAUD_RATE)
+    device.open()
 
-# except serial.serialutil.SerialException as ex:
-#     print("Serial Error: ", str(ex))
-#     exit(-1)
+except serial.SerialException as ex:
+    print("Serial Error: ", str(ex))
+    exit(-1)
 
 # except Exception as ex:
 #     print("Serial Error: ", str(ex))
@@ -160,13 +160,14 @@ def main2():
             raise Exception("Not found device")
         
         print("Waiting for data...\n") 
+
         while True:
-            if not device.is_open():
-                exit(-1)
+            pass
+            # print(device)
             
             # response = device.read_data()
 
-    except serial.serialutil.SerialException as ex:
+    except serial.SerialException as ex:
         print("Serial Error: ", str(ex))
         exit(-1)
 
