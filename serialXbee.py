@@ -58,6 +58,7 @@ client = MQTT(
 try:
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
+    device.reset()
 
 except serial.SerialException as ex:
     print("Serial Error: ", str(ex))
@@ -77,7 +78,7 @@ def on_connect(clientCB, userdata, flags, rc):
         print("Failed to connect with result code "+str(rc))
         sys.exit()
     client.subscribe(topic_LED,0)
-    #client.publish(topic_will,json.dumps(msg_onl),0,True)
+    client.publish(topic_will,json.dumps(msg_onl),0,True)
 ######################################################################
 def on_subscribe(mqttc, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
@@ -165,9 +166,9 @@ def main2():
         print("Waiting for data...\n") 
 
         while True:
-            device.read_data()
+            # device.read_data()
+            pass
                 
-
             # print(device)
             
             # response = device.read_data()
