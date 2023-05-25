@@ -78,7 +78,7 @@ def on_connect(clientCB, userdata, flags, rc):
         print("Failed to connect with result code "+str(rc))
         sys.exit()
     client.subscribe(topic_LED,0)
-    client.publish(topic_will,json.dumps(msg_onl),0,True)
+    #client.publish(topic_will,json.dumps(msg_onl),0,True)
 ######################################################################
 def on_subscribe(mqttc, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
@@ -158,10 +158,10 @@ def main2():
                 print("Serial Error: ", str(ex))
                 exit(-1)
 
-        if device and device.is_open():
-            device.add_data_received_callback(data_receive_callback)
-        else:
-            raise Exception("Not found device")
+        # if device and device.is_open():
+        device.add_data_received_callback(data_receive_callback)
+        # else:
+        #     raise Exception("Not found device")
         
         print("Waiting for data...\n") 
 
