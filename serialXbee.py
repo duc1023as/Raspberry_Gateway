@@ -57,7 +57,6 @@ client = MQTT(
 
 try:
     device = XBeeDevice(PORT, BAUD_RATE)
-    device.close()
     device.open()
 
 except serial.SerialException as ex:
@@ -182,7 +181,7 @@ def main2():
         exit(-1)
     finally:
         if device is not None and device.is_open():
-            device.close()
+            #device.close()
             exit(-1)
 
 t1 = threading.Thread(target=main2)
