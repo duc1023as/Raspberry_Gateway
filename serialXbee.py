@@ -57,8 +57,8 @@ client = MQTT(
 
 try:
     device = XBeeDevice(PORT, BAUD_RATE)
+    device.close()
     device.open()
-    device.reset()
 
 except serial.SerialException as ex:
     print("Serial Error: ", str(ex))
