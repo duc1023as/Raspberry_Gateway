@@ -77,7 +77,7 @@ def on_connect(clientCB, userdata, flags, rc):
         print("Failed to connect with result code "+str(rc))
         sys.exit()
     client.subscribe(topic_LED,0)
-    client.publish(topic_will,json.dumps(msg_onl),0,True)
+    #client.publish(topic_will,json.dumps(msg_onl),0,True)
 ######################################################################
 def on_subscribe(mqttc, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
@@ -129,30 +129,33 @@ def main2():
 
     try:
         def data_receive_callback(xbee_message):
-            print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
-                                     xbee_message.data))
-            # Convert the bytearray to a hex string
-            hex_string = binascii.hexlify(xbee_message.data).decode('utf-8')
-            # Convert the hex string to bytes
-            if(hex_string[0] == '0'  and hex_string[1] == '1'):
-                temp_string = bytes.fromhex(hex_string[2:10])
-                hum_string = bytes.fromhex(hex_string[10:])
-                # Unpack the bytes as a float
-                temp_value = struct.unpack("f", temp_string)[0]
-                hum_value = struct.unpack("f", hum_string)[0]
-                # Print the float value
-                print(temp_value)
-                print(hum_value)
-                value = {
-                    "temp":temp_value,
-                    "hum":hum_value,
-                }
-                client.publish(topic_DHT,json.dumps(value),0,False)
-            else:
-                print("Type 3")
-                client.publish(topic_will,json.dumps(msg_will),0,True)
-                return
-
+            try:
+                print("From %s >> %s" % (xbee_message.remote_device.get_64bit_addr(),
+                                        xbee_message.data))
+                # Convert the bytearray to a hex string
+                hex_string = binascii.hexlify(xbee_message.data).decode('utf-8')
+                # Convert the hex string to bytes
+                if(hex_string[0] == '0'  and hex_string[1] == '1'):
+                    temp_string = bytes.fromhex(hex_string[2:10])
+                    hum_string = bytes.fromhex(hex_string[10:])
+                    # Unpack the bytes as a float
+                    temp_value = struct.unpack("f", temp_string)[0]
+                    hum_value = struct.unpack("f", hum_string)[0]
+                    # Print the float value
+                    print(temp_value)
+                    print(hum_value)
+                    value = {
+                        "temp":temp_value,
+                        "hum":hum_value,
+                    }
+                    client.publish(topic_DHT,json.dumps(value),0,False)
+                else:
+                    print("Type 3")
+                    client.publish(topic_will,json.dumps(msg_will),0,True)
+                    return
+            except serial.SerialException as ex:
+                print("Serial Error: ", str(ex))
+                exit(-1)
 
         if device and device.is_open():
             device.add_data_received_callback(data_receive_callback)
@@ -162,7 +165,9 @@ def main2():
         print("Waiting for data...\n") 
 
         while True:
-            pass
+            device.read_data()
+                
+
             # print(device)
             
             # response = device.read_data()
