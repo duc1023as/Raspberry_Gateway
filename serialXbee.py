@@ -163,8 +163,8 @@ def main2():
 
         while True:
             #device.reset()
-            response = device.read_data()
-            # print(response)
+            # response = device.read_data()
+            print('In process')
             pass
 
     except serial.serialutil.SerialException as ex:

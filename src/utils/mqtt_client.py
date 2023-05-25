@@ -10,6 +10,7 @@ import json
 import os
 import time
 
+
 from influxdb import InfluxDBClient
 
 from ..core.sparkplug_b import *
@@ -380,8 +381,8 @@ def publishDeviceData(data):
     # Get the payload
     payload = sparkplug.getDdataPayload()
 
-    addMetric(payload, "input/temperature", AliasMap.Esp32_tem, MetricDataType.Float,data["temp"])
-    addMetric(payload, "input/humidity", AliasMap.Esp32_hum, MetricDataType.Float,data["hum"])
+    addMetric(payload, "input/temperature", AliasMap.Esp32_tem, MetricDataType.Float,data["temp"]+random.uniform(0, 1))
+    addMetric(payload, "input/humidity", AliasMap.Esp32_hum, MetricDataType.Float,data["hum"]+random.uniform(0, 1))
 
     # Publish the initial data with the Device DEATH certificate
     totalByteArray = bytearray(payload.SerializeToString())
@@ -398,8 +399,8 @@ def publishDeviceDataZb(data):
     # Get the payload
     payload = sparkplug.getDdataPayload()
 
-    addMetric(payload, "input/temperature", AliasMap.Zigbee_tem, MetricDataType.Float,data["temp"])
-    addMetric(payload, "input/humidity", AliasMap.Zigbee_hum, MetricDataType.Float,data["hum"])
+    addMetric(payload, "input/temperature", AliasMap.Zigbee_tem, MetricDataType.Float,data["temp"]+random.uniform(0, 1))
+    addMetric(payload, "input/humidity", AliasMap.Zigbee_hum, MetricDataType.Float,data["hum"]+random.uniform(0, 1))
 
     # Publish the initial data with the Device DEATH certificate
     totalByteArray = bytearray(payload.SerializeToString())
