@@ -55,17 +55,17 @@ client = MQTT(
     msg_will=json.dumps(msg_will)
 ).create_connect()
 
-try:
-    device = XBeeDevice(PORT, BAUD_RATE)
-    device.open()
+# try:
+device = XBeeDevice(PORT, BAUD_RATE)
+device.open()
 
-except serial.serialutil.SerialException as ex:
-    print("Serial Error: ", str(ex))
-    exit(-1)
+# except serial.serialutil.SerialException as ex:
+#     print("Serial Error: ", str(ex))
+#     exit(-1)
 
-except Exception as ex:
-    print("Serial Error: ", str(ex))
-    exit(-1)
+# except Exception as ex:
+#     print("Serial Error: ", str(ex))
+#     exit(-1)
 
 ######################################################################
 # The callback for when the client receives a CONNACK response from the server.
