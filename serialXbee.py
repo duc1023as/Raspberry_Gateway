@@ -160,11 +160,12 @@ def main2():
             raise Exception("Not found device")
         
         print("Waiting for data...\n") 
-
+        i = 0
         while True:
+            i = i + 1
             #device.reset()
             # response = device.read_data()
-            print('In process')
+            time.sleep(i)
             pass
 
     except serial.serialutil.SerialException as ex:
