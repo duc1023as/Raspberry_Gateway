@@ -161,9 +161,10 @@ def main2():
         
         print("Waiting for data...\n") 
         while True:
-            #device.reset()
+            if not device.is_open():
+                exit(-1)
+            
             # response = device.read_data()
-            pass
 
     except serial.serialutil.SerialException as ex:
         print("Serial Error: ", str(ex))
