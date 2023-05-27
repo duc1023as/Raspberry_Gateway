@@ -157,6 +157,9 @@ client.loop_start()
 def callback_device_discovered(remote):
     print("Device discovered: %s" % remote)
 
+def get_devices():
+    
+
 def main2():
     print(" +-----------------------------------------+")
     print(" | XBee Python Library Receive Data Sample |")
@@ -213,7 +216,7 @@ def main2():
             
             if len(devices_check) == 0:
                 print("abc")
-                exit(-1)
+                break
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
