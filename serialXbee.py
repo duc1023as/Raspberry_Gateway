@@ -181,11 +181,11 @@ def main2():
         print("Waiting for data...\n") 
 
         while True:
-            # respone=device.read_data()
+            respone=device.read_data()
             # if respone is None:
             #     print("Can not read date")
                 
-            print('process')
+            print(respone)
             if not device.is_open():
                 print("Not connect to device")
                 exit(-1)
