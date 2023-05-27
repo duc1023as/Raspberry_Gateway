@@ -214,8 +214,8 @@ def main2():
             print(devices_check)
             if len(devices_check) == 0:
                 print("Not found router")
+                client.loop_stop()
                 exit(-1)
-            time.sleep(10)
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
@@ -237,8 +237,7 @@ def main2():
 t1 = threading.Thread(target=main2)
 t1.start()
 t1.join()
-client.loop_stop()
-del t1
+
 
 
 # if __name__ == '__main__':
