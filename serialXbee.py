@@ -91,6 +91,11 @@ def on_connect(clientCB, userdata, flags, rc):
         print("Failed to connect with result code "+str(rc))
         sys.exit()
     client.subscribe(topic_LED,0)
+    xbee_network = device.get_network()
+    print(xbee_network.get_devices())
+    if len(xbee_network.get_devices()) == 0 :
+        print("Not found Device")
+        exit(-1)
     client.publish(topic_will,json.dumps(msg_onl),0,True)
 ######################################################################
 def on_subscribe(mqttc, obj, mid, granted_qos):
