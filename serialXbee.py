@@ -61,6 +61,7 @@ client = MQTT(
 ).create_connect()
 
 try:
+    time.sleep(10)
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
     xbee_network_init = device.get_network()
