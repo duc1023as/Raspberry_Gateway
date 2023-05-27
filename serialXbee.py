@@ -185,7 +185,7 @@ def main2():
             # if respone is None:
             #     print("Can not read date")
                 
-            # print(device)
+            print('process')
             if not device.is_open():
                 print("Not connect to device")
                 exit(-1)
