@@ -26,6 +26,7 @@ BAUD_RATE = 9600
 ROUTER1_NODE_ID = "Router"
 # ROUTER2_NODE_ID = "ROUTER3"
 ROUTER2_NODE_ID = "ROUTER3"
+Coordinator_ID = "Coordinator"
 
 
 load_dotenv()
@@ -191,16 +192,10 @@ def main2():
                 exit(-1)
             # device.reset()
             xbee_network = device.get_network()
-            # xbee_network.set_discovery_timeout(3.5)
-            remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
+            remote_device = xbee_network.discover_device(Coordinator_ID)
             if remote_device is None:
-                print("Could not find the remote device")
-                # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
-                time.sleep(.3)
-                remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
-                if remote_device is None:
-                    print("Router2 not found")
-                    exit(-1)
+                print("Coordinator is not found")
+                exit(-1)
     except serial.SerialException as ex:
         print("Serial Error: ", str(ex))
         exit(-1)
