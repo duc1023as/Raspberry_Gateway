@@ -157,9 +157,6 @@ client.loop_start()
 def callback_device_discovered(remote):
     print("Device discovered: %s" % remote)
 
-def get_devices():
-    
-
 def main2():
     print(" +-----------------------------------------+")
     print(" | XBee Python Library Receive Data Sample |")
