@@ -181,14 +181,15 @@ def main2():
         print("Waiting for data...\n") 
 
         while True:
-            respone=device.read_data()
+            # respone=device.read_data()
             # if respone is None:
             #     print("Can not read date")
                 
-            print(respone)
+            # print(respone)
             if not device.is_open():
                 print("Not connect to device")
                 exit(-1)
+            device.reset()
             
     except serial.SerialException as ex:
         print("Serial Error: ", str(ex))
