@@ -13,6 +13,10 @@ from threading import Thread
 import threading
 import serial
 
+import atexit
+
+
+
 # TODO: Replace with the serial port where your local module is connected to.
 # PORT = "COM8"
 PORT = "/dev/ttyUSB0"
@@ -58,12 +62,19 @@ client = MQTT(
 try:
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
-    device._serial_port.purge_port()
+
 
 except serial.SerialException as ex:
     print("Serial Error: ", str(ex))
     exit(-1)
 
+def cleanup():
+    print("Error and begin cleaning serial")
+    device._serial_port.purge_port()
+    device.close()
+    exit(-1)
+    
+atexit.register(cleanup)
 # except Exception as ex:
 #     print("Serial Error: ", str(ex))
 #     exit(-1)
