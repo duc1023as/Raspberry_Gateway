@@ -179,10 +179,11 @@ def main2():
             raise Exception("Not found device")
         
         print("Waiting for data...\n") 
+        input()
 
-        while True:
+        #while True:
             # device.read_data()
-            pass
+            #pass
                 
             # print(device)
             
