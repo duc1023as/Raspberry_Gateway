@@ -193,12 +193,12 @@ def main2():
                 exit(-1)
             # device.reset()
             xbee_network = device.get_network()
-            print("Find network")
-            # print(dir(xbee_network))
+            print(xbee_network.get_devices())
+            
             # remote_device = xbee_network.discover_device(Coordinator_ID)
-            if xbee_network is None:
-                print("Coordinator is not found")
-                exit(-1)
+            # if not xbee_network.has_devices():
+            #     print("Coordinator is not found")
+            #     exit(-1)
     except serial.SerialException as ex:
         print("Serial Error: ", str(ex))
         exit(-1)
