@@ -212,8 +212,8 @@ def main2():
             devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
             
             if len(devices_check) == 0:
-                print("abc")
-                break
+                print("Not found router")
+                exit(-1)
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
