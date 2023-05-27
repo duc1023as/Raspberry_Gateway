@@ -18,8 +18,8 @@ import atexit
 
 
 # TODO: Replace with the serial port where your local module is connected to.
-# PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+#PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -63,7 +63,17 @@ client = MQTT(
 try:
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
+    xbee_network_init = device.get_network()
+    xbee_network_init.start_discovery_process(deep=True)
+    print("Discovering remote XBee devices...")
 
+    while xbee_network_init.is_discovery_running():
+        time.sleep(0.1)
+
+    devices = xbee_network_init.get_devices()
+    if len(devices) == 0:
+        print("Not found device")
+        exit(-1) 
 
 except serial.SerialException as ex:
     print("Serial Error: ", str(ex))
@@ -91,9 +101,8 @@ def on_connect(clientCB, userdata, flags, rc):
         print("Failed to connect with result code "+str(rc))
         sys.exit()
     client.subscribe(topic_LED,0)
-    xbee_network = device.get_network()
-    print(xbee_network.get_devices())
-    if len(xbee_network.get_devices()) == 0 :
+    print(xbee_network_init.get_devices())
+    if len(xbee_network_init.get_devices()) == 0 :
         print("Not found Device")
         exit(-1)
     client.publish(topic_will,json.dumps(msg_onl),0,True)
@@ -144,6 +153,8 @@ client.on_log = on_log
 client.on_publish = on_publish
 client.loop_start()
 
+def callback_device_discovered(remote):
+    print("Device discovered: %s" % remote)
 
 def main2():
     print(" +-----------------------------------------+")
@@ -196,12 +207,13 @@ def main2():
             if not device.is_open():
                 print("Not connect to device")
                 exit(-1)
-            # device.reset()
-            xbee_network = device.get_network()
-            print(xbee_network.get_devices())
-            if len(xbee_network.get_devices()) == 0 :
-                print("Not found Device")
+
+            devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+            
+            if len(devices_check) == 0:
+                print("abc")
                 exit(-1)
+            # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
             # if not xbee_network.has_devices():
