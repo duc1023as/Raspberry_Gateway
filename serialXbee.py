@@ -18,8 +18,8 @@ import atexit
 
 
 # TODO: Replace with the serial port where your local module is connected to.
-#PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+# PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -200,6 +200,7 @@ def main2():
         print("Waiting for data...\n") 
 
         while True:
+            
             # respone=device.read_data()
             # if respone is None:
             #     print("Can not read date")
@@ -210,10 +211,11 @@ def main2():
                 exit(-1)
 
             devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
-            
+            print(devices_check)
             if len(devices_check) == 0:
                 print("Not found router")
                 exit(-1)
+            time.sleep(10)
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
