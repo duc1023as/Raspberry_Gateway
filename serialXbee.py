@@ -188,7 +188,6 @@ def main2():
                     print("Type 3")
                     client.publish(topic_will,json.dumps(msg_will),0,True)
                     return
-                device._serial_port.purge_port()
             except serial.SerialException as ex:
                 print("Serial Error: ", str(ex))
                 exit(-1)
@@ -238,7 +237,8 @@ def main2():
 t1 = threading.Thread(target=main2)
 t1.start()
 t1.join()
-
+client.loop_stop()
+del t1
 
 
 # if __name__ == '__main__':
