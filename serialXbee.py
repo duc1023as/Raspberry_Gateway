@@ -18,8 +18,8 @@ import atexit
 
 
 # TODO: Replace with the serial port where your local module is connected to.
-# PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+# PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -71,8 +71,9 @@ except serial.SerialException as ex:
 
 def cleanup():
     print("Error and begin cleaning serial")
-    device._serial_port.purge_port()
-    device.close()
+    if device.is_open():
+        device._serial_port.purge_port()
+        device.close()
     exit(-1)
     
 atexit.register(cleanup)
@@ -192,8 +193,9 @@ def main2():
                 exit(-1)
             # device.reset()
             xbee_network = device.get_network()
-            remote_device = xbee_network.discover_device(Coordinator_ID)
-            if remote_device is None:
+            # print(dir(xbee_network))
+            # remote_device = xbee_network.discover_device(Coordinator_ID)
+            if xbee_network is None:
                 print("Coordinator is not found")
                 exit(-1)
     except serial.SerialException as ex:
