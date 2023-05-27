@@ -194,6 +194,9 @@ def main2():
             # device.reset()
             xbee_network = device.get_network()
             print(xbee_network.get_devices())
+            if len(xbee_network.get_devices()) == 0 :
+                print("Not found Device")
+                exit(-1)
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
             # if not xbee_network.has_devices():
