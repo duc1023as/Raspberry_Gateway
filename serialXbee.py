@@ -14,7 +14,6 @@ from threading import Thread
 import threading
 import serial
 from digi.xbee.models.status import NetworkDiscoveryStatus
-
 import atexit
 
 
@@ -107,7 +106,7 @@ def on_connect(clientCB, userdata, flags, rc):
     # if len(xbee_network_init.get_devices()) == 0 :
     #     print("Not found Device")
     #     exit(-1)
-    #client.publish(topic_will,json.dumps(msg_onl),0,True)
+    client.publish(topic_will,json.dumps(msg_onl),0,True)
 ######################################################################
 def on_subscribe(mqttc, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
@@ -124,6 +123,7 @@ def on_message(clientCB, userdata, msg):
     msg_decode=str(msg.payload.decode("utf-8","ignore"))
     msg_in=json.loads(msg_decode)
     xbee_network = device.get_network()
+    xbee_network.clear()
     # xbee_network.set_discovery_timeout(3.5)
     remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
     if remote_device is None:
@@ -140,16 +140,13 @@ def on_message(clientCB, userdata, msg):
             bytes_to_send = struct.pack("BB", 0x02, 0x01)
             print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
             device.send_data(remote_device, bytes_to_send)
-            client.publish(topic_will,json.dumps(msg_onl),0,True)
         elif(msg_in["led"] == 0):
             bytes_to_send = struct.pack("BB", 0x02, 0x00)
             print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
-            device.send_data(remote_device, bytes_to_send)
-            client.publish(topic_will,json.dumps(msg_onl),0,True)
-        
+            device.send_data(remote_device, bytes_to_send)    
     except Exception as ex:
         print("Erorr: ",str(ex))
-        client.publish(topic_will,json.dumps(msg_will),0,True)
+        exit(-1)
 
 client.on_connect = on_connect
 client.on_subscribe = on_subscribe
@@ -247,10 +244,8 @@ def main2():
 
         if device and device.is_open():
             device.add_data_received_callback(data_receive_callback)
-        # else:
-        #     # raise Exception("Not found device")
-        #     break
-        
+        else:
+            raise Exception("Not found device")  
         print("Waiting for data...\n") 
 
         while True:
@@ -266,54 +261,19 @@ def main2():
                 break
 
 
-            xbee_network = device.get_network()
-
-            xbee_network.set_discovery_timeout(15)  # 15 seconds.
-
-            xbee_network.clear()
-
-            # Callback for discovered devices.
-            def callback_device_discovered(remote):
-                print("Device discovered: %s" % remote)
-
-            # Callback for discovery finished.
-            def callback_discovery_finished(status):
-                if status == NetworkDiscoveryStatus.SUCCESS:
-                    print("Discovery process finished successfully.")
-                else:
-                    print("There was an error discovering devices: %s" % status.description)
-                    client.publish(topic_will,json.dumps(msg_will),0,True)
-                xbee_network.clear()
-
-            xbee_network.add_device_discovered_callback(callback_device_discovered)
-
-            xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
-
-            devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
-
-            print(devices_check)
-            if len(devices_check) == 0:
-                print("Not Found Router")
-                client.publish(topic_will,json.dumps(msg_will),0,True)
-                break
-            else:
-                client.publish(topic_will,json.dumps(msg_onl),0,True)
-            # device.reset()
-            
-            # remote_device = xbee_network.discover_device(Coordinator_ID)
-            # if not xbee_network.has_devices():
-            #     print("Coordinator is not found")
-            #     exit(-1)
     except serial.SerialException as ex:
         print("Serial Error: ", str(ex))
         device.close()
+        exit(-1)
 
     except Exception as ex:
         print("Error : ",str(ex))    
         device.close()
+        exit(-1)
     finally:
         if device is not None and device.is_open():
             device.close()
+            exit(-1)
 
 try:
     t1 = threading.Thread(target=main2)
