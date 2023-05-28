@@ -158,6 +158,14 @@ client.loop_start()
 def callback_device_discovered(remote):
     print("Device discovered: %s" % remote)
 
+def get_devices():
+    while True:
+        devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+        print(devices_check)
+        if len(devices_check) == 0:
+            print("Not found router")
+            exit(-1)
+
 def main2():
     print(" +-----------------------------------------+")
     print(" | XBee Python Library Receive Data Sample |")
@@ -212,11 +220,7 @@ def main2():
                 print("Not connect to device")
                 exit(-1)
 
-            devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
-            print(devices_check)
-            if len(devices_check) == 0:
-                print("Not found router")
-                exit(-1)
+            
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
@@ -236,10 +240,14 @@ def main2():
             exit(-1)
 
 t1 = threading.Thread(target=main2)
+t2 = threading.Thread(target=get_devices)
 t1.start()
+t2.start()
 t1.join()
+t2.join()
 client.loop_stop()
 del t1
+del t2
 
 
 # if __name__ == '__main__':
