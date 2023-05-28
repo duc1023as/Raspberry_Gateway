@@ -146,7 +146,7 @@ def on_message(clientCB, userdata, msg):
             device.send_data(remote_device, bytes_to_send)
     except Exception as ex:
         print("Erorr: ",str(ex))
-        exit(-1)
+        client.publish(topic_will,json.dumps(msg_will),0,True)
 
 client.on_connect = on_connect
 client.on_subscribe = on_subscribe
