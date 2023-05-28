@@ -182,6 +182,7 @@ def get_devices():
                     xbee_network.__last_search_dev_list.clear()
                     if len(discovered_devices) == 0:
                         print("Not Found Device")
+                        client.publish(topic_will,json.dumps(msg_will),0,True)
                         break
                 else:
                     print("There was an error discovering devices: %s" % status.description)
@@ -263,7 +264,6 @@ def main2():
                 client.publish(topic_will,json.dumps(msg_will),0,True)
                 break
             get_devices()
-            break
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
