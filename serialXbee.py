@@ -2,6 +2,7 @@
 #digi-xbee-1.4.1
 import sys
 from digi.xbee.devices import XBeeDevice
+import digi
 import binascii
 import struct
 from src.core.mqqt_provider import MQTT
@@ -159,12 +160,22 @@ def callback_device_discovered(remote):
     print("Device discovered: %s" % remote)
 
 def get_devices():
-    while True:
-        devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
-        print(devices_check)
-        if len(devices_check) == 0:
-            print("Not found router")
-            exit(-1)
+    try:
+        while True:
+            devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+            print(devices_check)
+            if len(devices_check) == 0:
+                print("Not found router")
+                exit(-1)
+    except RuntimeError:
+        print("fail runtime")
+        exit(-1)
+    except digi.xbee.exception.TimeoutException:
+        print("fail TimeoutException")
+        exit(-1)
+    except Exception as ex:
+        print("error", str(ex))
+        exit(-1)
 
 def main2():
     print(" +-----------------------------------------+")
@@ -239,16 +250,25 @@ def main2():
             device.close()
             exit(-1)
 
-t1 = threading.Thread(target=main2)
-t2 = threading.Thread(target=get_devices)
-t1.start()
-t2.start()
-t1.join()
-t2.join()
-client.loop_stop()
-del t1
-del t2
-
+try:
+    t1 = threading.Thread(target=main2)
+    t2 = threading.Thread(target=get_devices)
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
+    client.loop_stop()
+    del t1
+    del t2
+except RuntimeError:
+    print("fail runtime")
+    exit(-1)
+except digi.xbee.exception.TimeoutException:
+    print("fail TimeoutException")
+    exit(-1)
+except Exception as ex:
+    print("error", str(ex))
+    exit(-1)
 
 # if __name__ == '__main__':
 #     main()
