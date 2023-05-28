@@ -84,7 +84,6 @@ except serial.SerialException as ex:
 def cleanup():
     print("Error and begin cleaning serial")
     if device.is_open():
-        device._serial_port.purge_port()
         device.close()
     exit(-1)
     
