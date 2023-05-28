@@ -264,7 +264,40 @@ def main2():
                 print("Not connect to device")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
                 break
-            get_devices()
+
+
+            xbee_network = device.get_network()
+
+            xbee_network.set_discovery_timeout(15)  # 15 seconds.
+
+            xbee_network.clear()
+
+            # Callback for discovered devices.
+            def callback_device_discovered(remote):
+                print("Device discovered: %s" % remote)
+
+            # Callback for discovery finished.
+            def callback_discovery_finished(status):
+                if status == NetworkDiscoveryStatus.SUCCESS:
+                    print("Discovery process finished successfully.")
+                else:
+                    print("There was an error discovering devices: %s" % status.description)
+                    client.publish(topic_will,json.dumps(msg_will),0,True)
+                xbee_network.clear()
+
+            xbee_network.add_device_discovered_callback(callback_device_discovered)
+
+            xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
+
+            devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+            
+            print(devices_check)
+            if len(devices_check) == 0:
+                print("Not Found Router")
+                client.publish(topic_will,json.dumps(msg_will),0,True)
+                break
+            else:
+                client.publish(topic_will,json.dumps(msg_onl),0,True)
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
