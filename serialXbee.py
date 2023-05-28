@@ -161,7 +161,7 @@ def callback_device_discovered(remote):
 def get_devices():
     try:
         while True:
-            #devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+         
             # print(devices_check)
 
             xbee_network = device.get_network()
@@ -178,24 +178,19 @@ def get_devices():
             def callback_discovery_finished(status):
                 if status == NetworkDiscoveryStatus.SUCCESS:
                     print("Discovery process finished successfully.")
-                    discovered_devices = list(filter(lambda x: x.get_node_id() in [ROUTER1_NODE_ID, ROUTER2_NODE_ID], xbee_network.__last_search_dev_list))
-                    xbee_network.__last_search_dev_list.clear()
-                    if len(discovered_devices) == 0:
-                        print("Not Found Device")
-                        client.publish(topic_will,json.dumps(msg_will),0,True)
                 else:
                     print("There was an error discovering devices: %s" % status.description)
+                    exit(-1)
 
             xbee_network.add_device_discovered_callback(callback_device_discovered)
 
             xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
 
-            xbee_network.start_discovery_process()
-
-            print("Discovering remote XBee devices...")
-
-            while xbee_network.is_discovery_running():
-                time.sleep(0.1)
+            devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+            if len(devices_check) == 0:
+                print("Not Found Router")
+                client.publish(topic_will,json.dumps(msg_will),0,True)
+                break
 
             
     except RuntimeError:
