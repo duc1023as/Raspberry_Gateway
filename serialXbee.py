@@ -107,7 +107,7 @@ def on_connect(clientCB, userdata, flags, rc):
     # if len(xbee_network_init.get_devices()) == 0 :
     #     print("Not found Device")
     #     exit(-1)
-    client.publish(topic_will,json.dumps(msg_onl),0,True)
+    #client.publish(topic_will,json.dumps(msg_onl),0,True)
 ######################################################################
 def on_subscribe(mqttc, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
@@ -290,7 +290,7 @@ def main2():
             xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
 
             devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
-            
+
             print(devices_check)
             if len(devices_check) == 0:
                 print("Not Found Router")
