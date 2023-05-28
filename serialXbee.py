@@ -180,7 +180,8 @@ def get_devices():
                     print("Discovery process finished successfully.")
                 else:
                     print("There was an error discovering devices: %s" % status.description)
-                    exit(-1)
+                    client.publish(topic_will,json.dumps(msg_will),0,True)
+                xbee_network.clear()
 
             xbee_network.add_device_discovered_callback(callback_device_discovered)
 
