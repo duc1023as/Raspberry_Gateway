@@ -144,7 +144,6 @@ def on_message(clientCB, userdata, msg):
             bytes_to_send = struct.pack("BB", 0x02, 0x00)
             print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
             device.send_data(remote_device, bytes_to_send)
-        device._serial_port.purge_port()
     except Exception as ex:
         print("Erorr: ",str(ex))
         exit(-1)
@@ -208,7 +207,6 @@ def main2():
                     print("Type 3")
                     client.publish(topic_will,json.dumps(msg_will),0,True)
                     return
-                device._serial_port.purge_port()
             except serial.SerialException as ex:
                 print("Serial Error: ", str(ex))
                 exit(-1)
