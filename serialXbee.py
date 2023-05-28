@@ -191,6 +191,7 @@ def get_devices():
             xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
 
             devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+            print(devices_check)
             if len(devices_check) == 0:
                 print("Not Found Router")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
