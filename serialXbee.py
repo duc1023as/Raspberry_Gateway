@@ -183,10 +183,8 @@ def get_devices():
                     if len(discovered_devices) == 0:
                         print("Not Found Device")
                         client.publish(topic_will,json.dumps(msg_will),0,True)
-                        break
                 else:
                     print("There was an error discovering devices: %s" % status.description)
-                    break
 
             xbee_network.add_device_discovered_callback(callback_device_discovered)
 
