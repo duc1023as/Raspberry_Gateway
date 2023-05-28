@@ -227,7 +227,7 @@ def main2():
             if not device.is_open():
                 print("Not connect to device")
                 exit(-1)
-
+            get_devices()
             
             # device.reset()
             
@@ -249,14 +249,11 @@ def main2():
 
 try:
     t1 = threading.Thread(target=main2)
-    t2 = threading.Thread(target=get_devices)
     t1.start()
-    t2.start()
     t1.join()
-    t2.join()
     client.loop_stop()
     del t1
-    del t2
+
 except RuntimeError:
     print("fail runtime")
     exit(-1)
