@@ -13,6 +13,7 @@ import time
 from threading import Thread
 import threading
 import serial
+from digi.xbee.models.status import NetworkDiscoveryStatus
 
 import atexit
 
@@ -85,7 +86,7 @@ def cleanup():
     print("Error and begin cleaning serial")
     if device.is_open():
         device.close()
-    exit(-1)
+    
     
 atexit.register(cleanup)
 # except Exception as ex:
@@ -160,12 +161,44 @@ def callback_device_discovered(remote):
 def get_devices():
     try:
         while True:
-            devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
-            print(devices_check)
-            if len(devices_check) == 0:
-                print("Not found router")
-                client.publish(topic_will,json.dumps(msg_will),0,True)
-                break
+            #devices_check = xbee_network_init.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+            # print(devices_check)
+
+            xbee_network = device.get_network()
+
+            xbee_network.set_discovery_timeout(15)  # 15 seconds.
+
+            xbee_network.clear()
+
+            # Callback for discovered devices.
+            def callback_device_discovered(remote):
+                print("Device discovered: %s" % remote)
+
+            # Callback for discovery finished.
+            def callback_discovery_finished(status):
+                if status == NetworkDiscoveryStatus.SUCCESS:
+                    print("Discovery process finished successfully.")
+                    discovered_devices = list(filter(lambda x: x.get_node_id() in [ROUTER1_NODE_ID, ROUTER2_NODE_ID], xbee_network.__last_search_dev_list))
+                    xbee_network.__last_search_dev_list.clear()
+                    if len(discovered_devices) == 0:
+                        print("Not Found Device")
+                        break
+                else:
+                    print("There was an error discovering devices: %s" % status.description)
+                    break
+
+            xbee_network.add_device_discovered_callback(callback_device_discovered)
+
+            xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
+
+            xbee_network.start_discovery_process()
+
+            print("Discovering remote XBee devices...")
+
+            while xbee_network.is_discovery_running():
+                time.sleep(0.1)
+
+            
     except RuntimeError:
         print("fail runtime")
         exit(-1)
