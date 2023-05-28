@@ -164,7 +164,8 @@ def get_devices():
             print(devices_check)
             if len(devices_check) == 0:
                 print("Not found router")
-                exit(-1)
+                client.publish(topic_will,json.dumps(msg_will),0,True)
+                break
     except RuntimeError:
         print("fail runtime")
         exit(-1)
@@ -226,9 +227,10 @@ def main2():
             # print(respone)
             if not device.is_open():
                 print("Not connect to device")
-                exit(-1)
+                client.publish(topic_will,json.dumps(msg_will),0,True)
+                break
             get_devices()
-            
+            break
             # device.reset()
             
             # remote_device = xbee_network.discover_device(Coordinator_ID)
@@ -237,15 +239,14 @@ def main2():
             #     exit(-1)
     except serial.SerialException as ex:
         print("Serial Error: ", str(ex))
-        exit(-1)
+        device.close()
 
     except Exception as ex:
         print("Error : ",str(ex))    
-        exit(-1)
+        device.close()
     finally:
         if device is not None and device.is_open():
             device.close()
-            exit(-1)
 
 try:
     t1 = threading.Thread(target=main2)
