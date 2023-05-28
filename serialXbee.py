@@ -246,8 +246,9 @@ def main2():
 
         if device and device.is_open():
             device.add_data_received_callback(data_receive_callback)
-        else:
-            raise Exception("Not found device")
+        # else:
+        #     # raise Exception("Not found device")
+        #     break
         
         print("Waiting for data...\n") 
 
