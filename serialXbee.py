@@ -266,7 +266,7 @@ def main2():
                 print("Not connect to device")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
                 break
-            get_devices()
+            # get_devices()
 
 
     except serial.SerialException as ex:
