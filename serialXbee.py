@@ -19,7 +19,7 @@ import atexit
 
 
 # TODO: Replace with the serial port where your local module is connected to.
-# PORT = "COM8"
+#PORT = "COM8"
 PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
@@ -28,7 +28,7 @@ ROUTER1_NODE_ID = "Router"
 # ROUTER2_NODE_ID = "ROUTER3"
 ROUTER2_NODE_ID = "ROUTER3"
 Coordinator_ID = "Coordinator"
-
+check = True
 
 load_dotenv()
 
@@ -47,7 +47,6 @@ msg_onl = {
 # Set up for MQTT local
 topic_DHT = "Zigbee/DHT"
 topic_LED = "Zigbee/LED"
-
 
 
 client = MQTT(
@@ -152,6 +151,7 @@ def on_message(clientCB, userdata, msg):
     except Exception as ex:
         print("Erorr: ",str(ex))
         client.publish(topic_will,json.dumps(msg_will),0,True)
+        globals()['check']  = False
         # exit(-1)
 
 client.on_connect = on_connect
@@ -166,42 +166,57 @@ def callback_device_discovered(remote):
 
 def get_devices():
     try:
-        while True:
-         
-            # print(devices_check)
+        # print(devices_check)
 
-            xbee_network = device.get_network()
+        xbee_network = device.get_network()
 
-            xbee_network.set_discovery_timeout(15)  # 15 seconds.
+        xbee_network.set_discovery_timeout(3.5)  # 15 seconds.
 
-            xbee_network.clear()
+        xbee_network.clear()
 
-            # Callback for discovered devices.
-            # def callback_device_discovered(remote):
-            #     print("Device discovered: %s" % remote)
-
-            # # Callback for discovery finished.
-            # def callback_discovery_finished(status):
-            #     if status == NetworkDiscoveryStatus.SUCCESS:
-            #         print("Discovery process finished successfully.")
-            #     else:
-            #         print("There was an error discovering devices: %s" % status.description)
-            #         client.publish(topic_will,json.dumps(msg_will),0,True)
-
-            # xbee_network.add_device_discovered_callback(callback_device_discovered)
-
-            # xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
-
-            while xbee_network.is_discovery_running:
-                time.sleep(0.1)
-            print("Check device")
-            devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
-            print(devices_check)
-            if len(devices_check) == 0:
-                print("Not Found Router")
+        remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
+        if remote_device is None:
+            print("Could not find the remote device")
+            # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+            time.sleep(5)
+            remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
+            if remote_device is None:
+                print("Router2 not found")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
-            else:
-                client.publish(topic_will,json.dumps(msg_onl),0,True)
+                return
+        client.publish(topic_will,json.dumps(msg_onl),0,True)
+        time.sleep(5)
+
+
+
+        # Callback for discovered devices.
+        # def callback_device_discovered(remote):
+        #     print("Device discovered: %s" % remote)
+
+        # # Callback for discovery finished.
+        # def callback_discovery_finished(status):
+        #     if status == NetworkDiscoveryStatus.SUCCESS:
+        #         print("Discovery process finished successfully.")
+        #         xbee_network.clear()
+        #         devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
+        #         print(devices_check)
+        #         if len(devices_check) == 0:
+        #             print("Not Found Router")
+        #             client.publish(topic_will,json.dumps(msg_will),0,True)
+        #         else:
+        #             client.publish(topic_will,json.dumps(msg_onl),0,True)
+        #     else:
+        #         print("There was an error discovering devices: %s" % status.description)
+        #         client.publish(topic_will,json.dumps(msg_will),0,True)
+                 
+
+        # xbee_network.add_device_discovered_callback(callback_device_discovered)
+
+        # xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
+        # xbee_network.start_discovery_process()
+
+        # while xbee_network.is_discovery_running:
+        #     time.sleep(0.1)   
 
             
     except RuntimeError:
@@ -214,10 +229,13 @@ def get_devices():
         print("error", str(ex))
         exit(-1)
 
+
+
 def main2():
     print(" +-----------------------------------------+")
     print(" | XBee Python Library Receive Data Sample |")
     print(" +-----------------------------------------+\n")
+
 
     try:
         def data_receive_callback(xbee_message):
@@ -241,10 +259,11 @@ def main2():
                         "hum":hum_value,
                     }
                     client.publish(topic_DHT,json.dumps(value),0,False)
+                    globals()['check'] = True
                 else:
                     print("Type 3")
                     client.publish(topic_will,json.dumps(msg_will),0,True)
-                    return
+                    globals()['check']  = False
             except serial.SerialException as ex:
                 print("Serial Error: ", str(ex))
                 exit(-1)
@@ -266,9 +285,13 @@ def main2():
                 print("Not connect to device")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
                 break
+            
+            if not check:
+                break
+
             get_devices()
-
-
+            
+        
     except serial.SerialException as ex:
         print("Serial Error: ", str(ex))
         device.close()
