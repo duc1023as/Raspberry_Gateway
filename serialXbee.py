@@ -127,17 +127,28 @@ def on_message(clientCB, userdata, msg):
     if xbee_network.is_discovery_running():
         xbee_network.stop_discovery_process()
     # xbee_network.set_discovery_timeout(3.5)
-    remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
-    if remote_device is None:
-        print("Could not find the remote device")
-        # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
-        time.sleep(.3)
-        remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
-        if remote_device is None:
-            print("Router2 not found")
-            client.publish(topic_will,json.dumps(msg_will),0,True)
-            return
-            # exit(-1)
+    #remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
+    remote_devices = xbee_network.discover_devices([ROUTER2_NODE_ID, ROUTER1_NODE_ID])
+    if len(remote_devices) == 0:
+        client.publish(topic_will,json.dumps(msg_will),0,True)
+        return
+    
+    # if remote_device is None:
+    #     print("Could not find the remote device")
+    #     # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+    #     time.sleep(.3)
+    #     remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
+    #     if remote_device is None:
+    #         print("Router2 not found")
+    #         client.publish(topic_will,json.dumps(msg_will),0,True)
+    #         return
+    #         # exit(-1)
+    device_lists = [i.get_node_id() for i in remote_devices]
+    if ROUTER2_NODE_ID in device_lists:
+        remote_device = remote_devices[device_lists.index(ROUTER2_NODE_ID)]
+    else:
+        remote_device = remote_devices[device_lists.index(ROUTER1_NODE_ID)]
+    print("Send Data to Device: ", remote_device.get_node_id())
     try:
         if(msg_in["led"] == 1):
             bytes_to_send = struct.pack("BB", 0x02, 0x01)
