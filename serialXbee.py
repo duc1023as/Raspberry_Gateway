@@ -177,20 +177,20 @@ def get_devices():
             xbee_network.clear()
 
             # Callback for discovered devices.
-            def callback_device_discovered(remote):
-                print("Device discovered: %s" % remote)
+            # def callback_device_discovered(remote):
+            #     print("Device discovered: %s" % remote)
 
-            # Callback for discovery finished.
-            def callback_discovery_finished(status):
-                if status == NetworkDiscoveryStatus.SUCCESS:
-                    print("Discovery process finished successfully.")
-                else:
-                    print("There was an error discovering devices: %s" % status.description)
-                    client.publish(topic_will,json.dumps(msg_will),0,True)
+            # # Callback for discovery finished.
+            # def callback_discovery_finished(status):
+            #     if status == NetworkDiscoveryStatus.SUCCESS:
+            #         print("Discovery process finished successfully.")
+            #     else:
+            #         print("There was an error discovering devices: %s" % status.description)
+            #         client.publish(topic_will,json.dumps(msg_will),0,True)
 
-            xbee_network.add_device_discovered_callback(callback_device_discovered)
+            # xbee_network.add_device_discovered_callback(callback_device_discovered)
 
-            xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
+            # xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
 
             while xbee_network.is_discovery_running:
                 time.sleep(0.1)
