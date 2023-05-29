@@ -200,7 +200,6 @@ def get_devices():
             if len(devices_check) == 0:
                 print("Not Found Router")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
-                break
             else:
                 client.publish(topic_will,json.dumps(msg_onl),0,True)
 
