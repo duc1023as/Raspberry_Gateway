@@ -136,19 +136,23 @@ def on_message(clientCB, userdata, msg):
         if remote_device is None:
             print("Router2 not found")
             client.publish(topic_will,json.dumps(msg_will),0,True)
-            exit(-1)
+            return
+            # exit(-1)
     try:
         if(msg_in["led"] == 1):
             bytes_to_send = struct.pack("BB", 0x02, 0x01)
             print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
             device.send_data(remote_device, bytes_to_send)
+            client.publish(topic_will,json.dumps(msg_onl),0,True)
         elif(msg_in["led"] == 0):
             bytes_to_send = struct.pack("BB", 0x02, 0x00)
             print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
-            device.send_data(remote_device, bytes_to_send)    
+            device.send_data(remote_device, bytes_to_send)
+            client.publish(topic_will,json.dumps(msg_onl),0,True)    
     except Exception as ex:
         print("Erorr: ",str(ex))
-        exit(-1)
+        client.publish(topic_will,json.dumps(msg_will),0,True)
+        # exit(-1)
 
 client.on_connect = on_connect
 client.on_subscribe = on_subscribe
@@ -183,7 +187,6 @@ def get_devices():
                 else:
                     print("There was an error discovering devices: %s" % status.description)
                     client.publish(topic_will,json.dumps(msg_will),0,True)
-                xbee_network.clear()
 
             xbee_network.add_device_discovered_callback(callback_device_discovered)
 
