@@ -124,6 +124,8 @@ def on_message(clientCB, userdata, msg):
     msg_in=json.loads(msg_decode)
     xbee_network = device.get_network()
     xbee_network.clear()
+    if xbee_network.is_discovery_running():
+        xbee_network.stop_discovery_process()
     # xbee_network.set_discovery_timeout(3.5)
     remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
     if remote_device is None:
@@ -134,7 +136,7 @@ def on_message(clientCB, userdata, msg):
         if remote_device is None:
             print("Router2 not found")
             client.publish(topic_will,json.dumps(msg_will),0,True)
-            return
+            exit(-1)
     try:
         if(msg_in["led"] == 1):
             bytes_to_send = struct.pack("BB", 0x02, 0x01)
@@ -186,6 +188,9 @@ def get_devices():
             xbee_network.add_device_discovered_callback(callback_device_discovered)
 
             xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
+
+            while xbee_network.is_discovery_running:
+                time.sleep(0.1)
 
             devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
             print(devices_check)
@@ -259,6 +264,7 @@ def main2():
                 print("Not connect to device")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
                 break
+            get_devices()
 
 
     except serial.SerialException as ex:
