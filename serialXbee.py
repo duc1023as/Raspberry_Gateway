@@ -62,20 +62,20 @@ client = MQTT(
 ).create_connect()
 
 try:
-    time.sleep(10)
+    # time.sleep(10)
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
-    xbee_network_init = device.get_network()
-    xbee_network_init.start_discovery_process(deep=True)
-    print("Discovering remote XBee devices...")
+    # xbee_network_init = device.get_network()
+    # xbee_network_init.start_discovery_process(deep=True)
+    # print("Discovering remote XBee devices...")
 
-    while xbee_network_init.is_discovery_running():
-        time.sleep(0.1)
+    # while xbee_network_init.is_discovery_running():
+    #     time.sleep(0.1)
 
-    devices = xbee_network_init.get_devices()
-    if len(devices) == 0:
-        print("Not found device")
-        exit(-1) 
+    # devices = xbee_network_init.get_devices()
+    # if len(devices) == 0:
+    #     print("Not found device")
+    #     exit(-1) 
 
 except serial.SerialException as ex:
     print("Serial Error: ", str(ex))
@@ -102,10 +102,10 @@ def on_connect(clientCB, userdata, flags, rc):
         print("Failed to connect with result code "+str(rc))
         sys.exit()
     client.subscribe(topic_LED,0)
-    xbee_network_init.clear()
-    if len(xbee_network_init.get_devices()) == 0 :
-        print("Not found Device")
-        exit(-1)
+    # xbee_network_init.clear()
+    # if len(xbee_network_init.get_devices()) == 0 :
+    #     print("Not found Device")
+    #     exit(-1)
     client.publish(topic_will,json.dumps(msg_onl),0,True)
 ######################################################################
 def on_subscribe(mqttc, obj, mid, granted_qos):
@@ -283,22 +283,14 @@ def main2():
             device.close()
             exit(-1)
 
-try:
-    t1 = threading.Thread(target=main2)
-    t1.start()
-    t1.join()
-    client.loop_stop()
-    del t1
 
-except RuntimeError:
-    print("fail runtime")
-    exit(-1)
-except digi.xbee.exception.TimeoutException:
-    print("fail TimeoutException")
-    exit(-1)
-except Exception as ex:
-    print("error", str(ex))
-    exit(-1)
+t1 = threading.Thread(target=main2)
+t1.start()
+t1.join()
+client.loop_stop()
+del t1
+
+
 
 # if __name__ == '__main__':
 #     main()
