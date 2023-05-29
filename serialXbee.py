@@ -63,6 +63,7 @@ client = MQTT(
 
 try:
     # time.sleep(10)
+    print("abc")
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
     # xbee_network_init = device.get_network()
