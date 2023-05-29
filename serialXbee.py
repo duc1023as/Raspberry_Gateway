@@ -203,8 +203,8 @@ def get_devices():
 
             # xbee_network.add_discovery_process_finished_callback(callback_discovery_finished)
 
-            # while xbee_network.is_discovery_running:
-            #     time.sleep(0.1)
+            while xbee_network.is_discovery_running:
+                time.sleep(0.1)
             print("Check device")
             devices_check = xbee_network.discover_devices([ROUTER1_NODE_ID, ROUTER2_NODE_ID])
             print(devices_check)
