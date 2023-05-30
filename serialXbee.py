@@ -142,12 +142,12 @@ def on_message(clientCB, userdata, msg):
             bytes_to_send = struct.pack("BB", 0x02, 0x01)
             print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
             device.send_data(remote_device, bytes_to_send)
-            client.publish(topic_will,json.dumps(msg_onl),0,True)
+            #client.publish(topic_will,json.dumps(msg_onl),0,True)
         elif(msg_in["led"] == 0):
             bytes_to_send = struct.pack("BB", 0x02, 0x00)
             print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
             device.send_data(remote_device, bytes_to_send)
-            client.publish(topic_will,json.dumps(msg_onl),0,True)    
+            #client.publish(topic_will,json.dumps(msg_onl),0,True)    
     except Exception as ex:
         print("Erorr: ",str(ex))
         client.publish(topic_will,json.dumps(msg_will),0,True)
