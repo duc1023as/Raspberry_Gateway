@@ -184,6 +184,8 @@ def get_devices():
                 print("Router2 not found")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
                 return
+        if not check:
+            return
         client.publish(topic_will,json.dumps(msg_onl),0,True)
         time.sleep(5)
 
@@ -281,13 +283,13 @@ def main2():
             #     print("Can not read date")
                 
             # print(respone)
+            if not check:
+                break
+
             if not device.is_open():
                 print("Not connect to device")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
-                break
-            
-            if not check:
-                break
+                break  
 
             get_devices()
             
