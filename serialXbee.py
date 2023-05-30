@@ -135,7 +135,7 @@ def on_message(clientCB, userdata, msg):
         if remote_device is None:
             print("Router2 not found")
             client.publish(topic_will,json.dumps(msg_will),0,True)
-            return
+            globals()['check']  = False
             # exit(-1)
     try:
         if(msg_in["led"] == 1):
