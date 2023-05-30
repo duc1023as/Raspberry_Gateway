@@ -173,7 +173,8 @@ def get_devices():
         xbee_network.set_discovery_timeout(3.5)  # 15 seconds.
 
         xbee_network.clear()
-
+        if not check:
+            return
         remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
         if remote_device is None:
             print("Could not find the remote device")
