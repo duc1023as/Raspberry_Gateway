@@ -15,12 +15,13 @@ import threading
 import serial
 from digi.xbee.models.status import NetworkDiscoveryStatus
 import atexit
+import datetime
 
 
 
 # TODO: Replace with the serial port where your local module is connected to.
-#PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+#PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -29,6 +30,10 @@ ROUTER1_NODE_ID = "Router"
 ROUTER2_NODE_ID = "ROUTER3"
 Coordinator_ID = "Coordinator"
 check = True
+time_request = None
+SECONDS = datetime.timedelta(seconds=20)
+remote_device = None
+check_conflict = False
 
 load_dotenv()
 
@@ -117,37 +122,53 @@ def on_publish(clientCB, userdata, mid):
 def on_log(clientCB, userdata, level, buf):
     print("log: ",buf)
 def on_message(clientCB, userdata, msg):
+    globals()["check_conflict"] = True
+    print("Conflicting ....")
     print("Message arrived from topic: " + msg.topic)
     print(str(msg.payload.decode("utf-8")))
     msg_decode=str(msg.payload.decode("utf-8","ignore"))
     msg_in=json.loads(msg_decode)
+
+    print("Start request at: ",  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    if globals()['time_request'] is None:
+        globals()['time_request'] = datetime.datetime.now() - datetime.timedelta(minutes=5)
+
     xbee_network = device.get_network()
     xbee_network.clear()
-    if xbee_network.is_discovery_running():
-        xbee_network.stop_discovery_process()
-    # xbee_network.set_discovery_timeout(3.5)
-    remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
-    if remote_device is None:
-        print("Could not find the remote device")
-        # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
-        time.sleep(.3)
-        remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
-        if remote_device is None:
-            print("Router2 not found")
-            client.publish(topic_will,json.dumps(msg_will),0,True)
-            globals()['check']  = False
-            # exit(-1)
+    # if xbee_network.is_discovery_running():
+    #     xbee_network.stop_discovery_process()
+    #xbee_network.set_discovery_timeout(3.5)
+    globals()['remote_device'] = xbee_network.discover_device(ROUTER2_NODE_ID)
+    print(globals()['remote_device'] is None)
+
+    if globals()['remote_device'] is None:
+        if datetime.datetime.now() - globals()['time_request'] > SECONDS or globals()['remote_device'] is None:
+            print("Could not find the remote device")
+            # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+            globals()['remote_device'] = xbee_network.discover_device(ROUTER1_NODE_ID)
+            if globals()['remote_device'] is None:
+                print("Router2 not found")
+                client.publish(topic_will,json.dumps(msg_will),0,True)
+                globals()['check']  = False
+                return
     try:
-        if(msg_in["led"] == 1):
-            bytes_to_send = struct.pack("BB", 0x02, 0x01)
-            print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
-            device.send_data(remote_device, bytes_to_send)
-            #client.publish(topic_will,json.dumps(msg_onl),0,True)
-        elif(msg_in["led"] == 0):
-            bytes_to_send = struct.pack("BB", 0x02, 0x00)
-            print("Sending data to %s >> %s..." % (remote_device.get_64bit_addr(), bytes_to_send))
-            device.send_data(remote_device, bytes_to_send)
-            #client.publish(topic_will,json.dumps(msg_onl),0,True)    
+        if globals()['remote_device']:
+            if(msg_in["led"] == 1):
+                bytes_to_send = struct.pack("BB", 0x02, 0x01)
+                print("Sending data to %s >> %s..." % (globals()['remote_device'].get_64bit_addr(), bytes_to_send))
+                device.send_data(globals()['remote_device'], bytes_to_send)
+                #client.publish(topic_will,json.dumps(msg_onl),0,True)
+            elif(msg_in["led"] == 0):
+                bytes_to_send = struct.pack("BB", 0x02, 0x00)
+                print("Sending data to %s >> %s..." % (globals()['remote_device'].get_64bit_addr(), bytes_to_send))
+                device.send_data(globals()['remote_device'], bytes_to_send)
+                #client.publish(topic_will,json.dumps(msg_onl),0,True)
+        globals()['check_conflict'] = False  
+        print("Not Conflict ....")
+        globals()['time_request'] = datetime.datetime.now()
+        print("End request at: ",  globals()['time_request'].strftime("%Y-%m-%d %H:%M:%S")) 
+
     except Exception as ex:
         print("Erorr: ",str(ex))
         client.publish(topic_will,json.dumps(msg_will),0,True)
@@ -166,26 +187,23 @@ def callback_device_discovered(remote):
 
 def get_devices():
     try:
-        # print(devices_check)
-
-        xbee_network = device.get_network()
-
-        xbee_network.set_discovery_timeout(3.5)  # 15 seconds.
-
-        xbee_network.clear()
-        if not check:
+        #xbee_network.set_discovery_timeout(3.5)  # 15 seconds.
+        if not globals()['check']:
             return
-        remote_device = xbee_network.discover_device(ROUTER2_NODE_ID)
-        if remote_device is None:
-            print("Could not find the remote device")
-            # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
-            time.sleep(5)
-            remote_device = xbee_network.discover_device(ROUTER1_NODE_ID)
-            if remote_device is None:
-                print("Router2 not found")
-                client.publish(topic_will,json.dumps(msg_will),0,True)
-                return
-        if not check:
+        if not globals()["check_conflict"]:
+            xbee_network = device.get_network()
+            remote_device_check = xbee_network.discover_device(ROUTER2_NODE_ID)
+            if remote_device_check is None:
+                print("Could not check the remote device")
+                # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+                time.sleep(5)
+                if not globals()["check_conflict"]:
+                    remote_device_check = xbee_network.discover_device(ROUTER1_NODE_ID)
+                    if remote_device_check is None:
+                        print("Check Router2 not found")
+                        client.publish(topic_will,json.dumps(msg_will),0,True)
+                        return
+        if not globals()['check']:
             return
         client.publish(topic_will,json.dumps(msg_onl),0,True)
         time.sleep(5)
@@ -284,7 +302,7 @@ def main2():
             #     print("Can not read date")
                 
             # print(respone)
-            if not check:
+            if not globals()['check']:
                 break
 
             if not device.is_open():
