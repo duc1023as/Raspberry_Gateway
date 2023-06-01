@@ -20,8 +20,8 @@ import datetime
 
 
 # TODO: Replace with the serial port where your local module is connected to.
-#PORT = "COM8"
-PORT = "/dev/ttyUSB0"
+PORT = "COM8"
+#PORT = "/dev/ttyUSB0"
 # TODO: Replace with the baud rate of your local module. data.decode("ISO-8859-1")
 BAUD_RATE = 9600
 
@@ -66,7 +66,7 @@ client = MQTT(
 ).create_connect()
 
 try:
-    time.sleep(10)
+    #time.sleep(10)
     device = XBeeDevice(PORT, BAUD_RATE)
     device.open()
     # xbee_network_init = device.get_network()
@@ -131,27 +131,27 @@ def on_message(clientCB, userdata, msg):
 
     print("Start request at: ",  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-    if globals()['time_request'] is None:
-        globals()['time_request'] = datetime.datetime.now() - datetime.timedelta(minutes=5)
+    # if globals()['time_request'] is None:
+    #     globals()['time_request'] = datetime.datetime.now() - datetime.timedelta(minutes=5)
 
-    xbee_network = device.get_network()
-    xbee_network.clear()
-    # if xbee_network.is_discovery_running():
-    #     xbee_network.stop_discovery_process()
-    #xbee_network.set_discovery_timeout(3.5)
-    globals()['remote_device'] = xbee_network.discover_device(ROUTER2_NODE_ID)
-    print(globals()['remote_device'] is None)
+    # xbee_network = device.get_network()
+    # xbee_network.clear()
+    # # if xbee_network.is_discovery_running():
+    # #     xbee_network.stop_discovery_process()
+    # #xbee_network.set_discovery_timeout(3.5)
+    # globals()['remote_device'] = xbee_network.discover_device(ROUTER2_NODE_ID)
+    # print(globals()['remote_device'] is None)
 
-    if globals()['remote_device'] is None:
-        if datetime.datetime.now() - globals()['time_request'] > SECONDS or globals()['remote_device'] is None:
-            print("Could not find the remote device")
-            # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
-            globals()['remote_device'] = xbee_network.discover_device(ROUTER1_NODE_ID)
-            if globals()['remote_device'] is None:
-                print("Router2 not found")
-                client.publish(topic_will,json.dumps(msg_will),0,True)
-                globals()['check']  = False
-                return
+    # if globals()['remote_device'] is None:
+    #     if datetime.datetime.now() - globals()['time_request'] > SECONDS or globals()['remote_device'] is None:
+    #         print("Could not find the remote device")
+    #         # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+    #         globals()['remote_device'] = xbee_network.discover_device(ROUTER1_NODE_ID)
+    #         if globals()['remote_device'] is None:
+    #             print("Router2 not found")
+    #             client.publish(topic_will,json.dumps(msg_will),0,True)
+    #             globals()['check']  = False
+    #             return
     try:
         if globals()['remote_device']:
             if(msg_in["led"] == 1):
@@ -192,17 +192,34 @@ def get_devices():
             return
         if not globals()["check_conflict"]:
             xbee_network = device.get_network()
-            remote_device_check = xbee_network.discover_device(ROUTER2_NODE_ID)
-            if remote_device_check is None:
-                print("Could not check the remote device")
-                # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+            xbee_network.clear()
+            devices = xbee_network.discover_devices([ROUTER2_NODE_ID, ROUTER1_NODE_ID])
+            print("List devices: ", devices)
+            nodes_device = [d.get_node_id() for d in devices]
+            print("Found devices: ", nodes_device)
+            if ROUTER2_NODE_ID in nodes_device:
+                globals()['remote_device'] = devices[nodes_device.index(ROUTER2_NODE_ID)]   
+            elif ROUTER1_NODE_ID in nodes_device:
+                print("Check Router2 not found")
+                globals()['remote_device'] = devices[nodes_device.index(ROUTER1_NODE_ID)]
+                
+            else:
+                print("Check Router1 not found")
+                client.publish(topic_will,json.dumps(msg_will),0,True)
                 time.sleep(5)
-                if not globals()["check_conflict"]:
-                    remote_device_check = xbee_network.discover_device(ROUTER1_NODE_ID)
-                    if remote_device_check is None:
-                        print("Check Router2 not found")
-                        client.publish(topic_will,json.dumps(msg_will),0,True)
-                        return
+                return
+
+            # globals()['remote_device'] = xbee_network.discover_device(ROUTER2_NODE_ID)
+            # if globals()['remote_device'] is None:
+            #     print("Could not check the remote device")
+            #     # remote_device = xbee_network.discover_device(ROUTER2_NODE_ID) change 20/5/2023
+            #     time.sleep(5)
+            #     if not globals()["check_conflict"]:
+            #         globals()['remote_device'] = xbee_network.discover_device(ROUTER1_NODE_ID)
+            #         if globals()['remote_device'] is None:
+            #             print("Check Router2 not found")
+            #             client.publish(topic_will,json.dumps(msg_will),0,True)
+            #             return
         if not globals()['check']:
             return
         client.publish(topic_will,json.dumps(msg_onl),0,True)
@@ -265,7 +282,10 @@ def main2():
                                         xbee_message.data))
                 # Convert the bytearray to a hex string
                 hex_string = binascii.hexlify(xbee_message.data).decode('utf-8')
+                print("HEX STRING: ", hex_string)
                 # Convert the hex string to bytes
+                if not globals()['check']:
+                    return
                 if(hex_string[0] == '0'  and hex_string[1] == '1'):
                     temp_string = bytes.fromhex(hex_string[2:10])
                     hum_string = bytes.fromhex(hex_string[10:])
@@ -280,8 +300,8 @@ def main2():
                         "hum":hum_value,
                     }
                     client.publish(topic_DHT,json.dumps(value),0,False)
-                    globals()['check'] = True
-                else:
+                    # globals()['check'] = True
+                elif(hex_string[0] == '0'  and hex_string[1] == '3'):
                     print("Type 3")
                     client.publish(topic_will,json.dumps(msg_will),0,True)
                     globals()['check']  = False
