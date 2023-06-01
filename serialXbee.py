@@ -206,7 +206,7 @@ def get_devices():
             else:
                 print("Check Router1 not found")
                 client.publish(topic_will,json.dumps(msg_will),0,True)
-                time.sleep(2)
+                time.sleep(5)
                 return
 
             # globals()['remote_device'] = xbee_network.discover_device(ROUTER2_NODE_ID)
@@ -223,7 +223,7 @@ def get_devices():
         if not globals()['check']:
             return
         client.publish(topic_will,json.dumps(msg_onl),0,True)
-        time.sleep(2)
+        time.sleep(5)
 
 
 
