@@ -43,7 +43,7 @@ services:
       - PORT=1883
       - USER=mqttBroker
       - PASSWORD=dominhduc
-      - URL_AWS=18.176.60.41
+      - URL_AWS=54.250.173.119
       - USER_AWS=mqttBroker
       - PWD_AWS=dominhduc
       - PORT_AWS=1884
@@ -96,7 +96,7 @@ services:
       - USER=mqttBroker
       - PASSWORD=dominhduc
       - TOPIC_WILL_LOG=dataIoT
-      - URL_CSharp=http://18.176.60.41:5000/api
+      - URL_CSharp=http://54.250.173.119:5000/api
     command: python3 logdata.py
 # volumes:
 #   influxdb-data:
